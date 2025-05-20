@@ -3,14 +3,6 @@ import app from './app';
 
 const PORT = parseInt(process.env.PORT || '3030', 10);
 
-(async () => {
-  try {
-    // await connectDB();
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`Servidor escuchando en el puerto ${PORT} en todas las interfaces`);
-    });
-  } catch (error) {
-    console.error('Error al iniciar el servidor:', error);
-    process.exit(1);
-  }
-})(); 
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor escuchando en el puerto ${PORT} en todas las interfaces`);
+}); 
