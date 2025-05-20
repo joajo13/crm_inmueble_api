@@ -9,11 +9,13 @@ services:
       - "${PORT:-3030}:3030"
     environment:
       - NODE_ENV=production
+      - PORT=3030
       # La URL de la base de datos debe configurarse en Coolify
       - DATABASE_URL=${DATABASE_URL}
     restart: always
+    command: npm start
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3030"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3030/health"]
       interval: 30s
       timeout: 5s
       retries: 3

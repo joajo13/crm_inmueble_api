@@ -29,6 +29,14 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 
+# Configuramos explícitamente el puerto
+ENV PORT=3030
+ENV NODE_ENV=production
+
 EXPOSE 3030
+
+# Healthcheck interno para verificar si la aplicación está funcionando
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3030/health || exit 1
 
 CMD ["npm", "start"] 

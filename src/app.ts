@@ -24,7 +24,16 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // Root endpoint
 app.get('/', (req, res) => {
-  res.status(200).json({ message: 'API de CRM Inmobiliario funcionando correctamente' });
+  res.status(200).json({ 
+    message: 'API de CRM Inmobiliario funcionando correctamente',
+    endpoints: {
+      health: '/health',
+      auth: '/api/auth',
+      users: '/api/users',
+      properties: '/api/properties'
+    },
+    version: '1.0.0'
+  });
 });
 
 // Health check endpoint
@@ -64,6 +73,23 @@ app.get('/health', async (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/properties', propertyRoutes);
+
+// Capturar rutas no encontradas - debe ir después de todas las rutas válidas
+app.use('*', (req, res) => {
+  console.log(`Ruta no encontrada: ${req.originalUrl}`);
+  res.status(404).json({ 
+    error: 'Ruta no encontrada',
+    path: req.originalUrl,
+    availableEndpoints: {
+      root: '/',
+      health: '/health',
+      auth: '/api/auth',
+      users: '/api/users',
+      properties: '/api/properties'
+    },
+    message: 'Por favor, verifica la URL e intenta nuevamente'
+  });
+});
 
 // Middleware de manejo de errores (debe ir al final)
 app.use(errorMiddleware);
