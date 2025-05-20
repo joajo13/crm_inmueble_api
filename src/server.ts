@@ -1,7 +1,7 @@
 import app from './app';
 // import { connectDB } from '@/config/database';
 
-const PORT = parseInt(process.env.PORT || '3000', 10);
+const PORT = parseInt(process.env.PORT || '3030', 10);
 
 (async () => {
   try {
