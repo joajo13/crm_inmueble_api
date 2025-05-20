@@ -7,7 +7,21 @@
     "dev": "ts-node -r tsconfig-paths/register src/server.ts",
     "seed": "ts-node prisma/seed.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node -r module-alias/register dist/server.js"
+  },
+  "_moduleAliases": {
+    "@": "dist",
+    "@controllers": "dist/controllers",
+    "@routes": "dist/routes",
+    "@services": "dist/services",
+    "@models": "dist/models",
+    "@middlewares": "dist/middlewares",
+    "@utils": "dist/utils",
+    "@config": "dist/config",
+    "@interfaces": "dist/interfaces",
+    "@externals": "dist/externals",
+    "@errors": "dist/errors",
+    "@validations": "dist/validations"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +35,7 @@
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
+    "module-alias": "^2.2.3",
     "morgan": "^1.10.0",
     "zod": "^3.25.7"
   },
