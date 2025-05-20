@@ -2,12 +2,22 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
-
+# Primero copiamos solo los archivos de prisma
 COPY prisma ./prisma/
+
+# Luego copiamos los archivos de dependencias
+COPY package*.json ./
+
+# Ajustamos para evitar que se ejecute prisma generate antes de tener el schema
+RUN npm ci --ignore-scripts
+
+# Copiamos el resto de archivos
 COPY . .
 
+# Ahora generamos prisma explícitamente
+RUN npx prisma generate
+
+# Compilamos la aplicación
 RUN npm run build
 
 FROM node:18-alpine AS runner
