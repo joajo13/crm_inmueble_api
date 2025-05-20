@@ -35,8 +35,8 @@ ENV NODE_ENV=production
 
 EXPOSE 3030
 
-# Healthcheck interno para verificar si la aplicación está funcionando
+# Healthcheck simplificado
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3030/health || exit 1
+  CMD wget -qO- http://localhost:3030/ > /dev/null || exit 1
 
 CMD ["npm", "start"] 

@@ -23,4 +23,22 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Cualquier otra ruta definida (método GET)
+app.get('/api/:path', (req, res) => {
+  res.status(200).json({
+    message: `Endpoint provisional: /api/${req.params.path}`,
+    status: 'ok'
+  });
+});
+
+// Manejador para rutas no definidas
+app.use((req, res) => {
+  res.status(200).json({
+    message: 'Endpoint no encontrado, pero la API está funcionando correctamente',
+    requestedPath: req.path,
+    method: req.method,
+    availableEndpoints: ['/', '/health']
+  });
+});
+
 export default app; 
