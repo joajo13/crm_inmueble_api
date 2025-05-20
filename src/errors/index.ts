@@ -1,0 +1,1 @@
+// Aquí puedes exportar utilidades o clases de error comunes si es necesario 

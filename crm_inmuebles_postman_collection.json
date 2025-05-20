@@ -1,0 +1,381 @@
+{
+  "info": {
+    "name": "CRM Inmobiliario API",
+    "description": "API para la gestión de propiedades inmobiliarias y usuarios",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Autenticación",
+      "description": "Endpoints para la autenticación de usuarios",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"email\": \"usuario@ejemplo.com\",\n\t\"password\": \"contraseña123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Inicia sesión con email y contraseña para obtener token de acceso."
+          },
+          "response": []
+        },
+        {
+          "name": "Refrescar Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"refreshToken\": \"tu_refresh_token\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/refresh-token",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "refresh-token"]
+            },
+            "description": "Obtiene un nuevo token de acceso usando el refresh token."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Propiedades",
+      "description": "Endpoints para gestionar propiedades inmobiliarias",
+      "item": [
+        {
+          "name": "Obtener todas las propiedades",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/properties",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "properties"]
+            },
+            "description": "Obtiene un listado de todas las propiedades disponibles."
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener propiedad por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/properties/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "properties", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "ID de la propiedad"
+                }
+              ]
+            },
+            "description": "Obtiene los detalles de una propiedad específica por su ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear nueva propiedad",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"title\": \"Apartamento en el centro\",\n\t\"description\": \"Hermoso apartamento con 2 habitaciones y 1 baño\",\n\t\"price\": 150000,\n\t\"listingTypeId\": 1,\n\t\"statusId\": 1,\n\t\"propertyTypeId\": 1,\n\t\"addressId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/properties",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "properties"]
+            },
+            "description": "Crea una nueva propiedad inmobiliaria."
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar propiedad",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"title\": \"Apartamento remodelado en el centro\",\n\t\"price\": 160000,\n\t\"statusId\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/properties/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "properties", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "ID de la propiedad a actualizar"
+                }
+              ]
+            },
+            "description": "Actualiza la información de una propiedad existente."
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar propiedad",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/properties/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "properties", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "ID de la propiedad a eliminar"
+                }
+              ]
+            },
+            "description": "Elimina una propiedad inmobiliaria por su ID."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "description": "Endpoints para gestionar usuarios",
+      "item": [
+        {
+          "name": "Obtener todos los usuarios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            },
+            "description": "Obtiene un listado de todos los usuarios (requiere autenticación)."
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener usuario por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "ID del usuario"
+                }
+              ]
+            },
+            "description": "Obtiene los detalles de un usuario específico por su ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear nuevo usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"email\": \"nuevo@ejemplo.com\",\n\t\"password\": \"contraseña123\",\n\t\"fullName\": \"Usuario Nuevo\",\n\t\"phone\": \"+1234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            },
+            "description": "Crea un nuevo usuario en el sistema."
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar usuario",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"fullName\": \"Nombre Actualizado\",\n\t\"phone\": \"+0987654321\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "ID del usuario a actualizar"
+                }
+              ]
+            },
+            "description": "Actualiza la información de un usuario existente."
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar usuario",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "ID del usuario a eliminar"
+                }
+              ]
+            },
+            "description": "Elimina un usuario por su ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar roles de usuario",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"roleIds\": [1, 2]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/:id/roles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", ":id", "roles"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "ID del usuario"
+                }
+              ]
+            },
+            "description": "Actualiza los roles asignados a un usuario."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string",
+      "description": "URL base de la API"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string",
+      "description": "Token de acceso JWT"
+    }
+  ]
+} 

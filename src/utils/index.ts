@@ -1,0 +1,1 @@
+// Aquí puedes agregar funciones utilitarias comunes para el proyecto 

@@ -1,0 +1,1 @@
+// Aquí puedes exportar interfaces o tipos comunes si es necesario 

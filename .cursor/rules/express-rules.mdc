@@ -1,0 +1,176 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Reglas de estructura para proyectos Express + TypeScript
+
+## Estructura de carpetas y archivos
+
+La estructura base del proyecto debe ser la siguiente:
+
+```
+src/
+  controllers/
+  routes/
+  services/
+  models/
+  middlewares/
+  utils/
+  config/
+  interfaces/
+  externals/   # Para servicios externos (APIs, SDKs, integraciones)
+  errors/      # Para clases, catálogo y utilidades de errores
+  app.ts
+  server.ts
+```
+
+- Cada carpeta agrupa los archivos por responsabilidad.
+- Los controladores, servicios y modelos se nombran por recurso (ej: user.controller.ts, property.service.ts).
+- La configuración de la base de datos y otras variables de entorno van en `config/`.
+- Los servicios externos (APIs, SDKs, integraciones) se colocan en `externals/`.
+- Los errores personalizados, el catálogo de errores y utilidades relacionadas se colocan en `errors/` (ej: `src/errors/error-catalog.ts`).
+- Los tests pueden ir fuera de `src/` o dentro, según preferencia futura.
+
+Esta estructura puede ser modificada y extendida según las necesidades del proyecto.
+
+## Rutas y controladores
+
+- Cada recurso tiene su propio archivo de rutas en `src/routes/` (ej: `user.routes.ts`, `property.routes.ts`).
+- Cada archivo de rutas importa su respectivo controlador desde `src/controllers/`.
+- Las rutas siguen el patrón RESTful:
+  - GET `/api/recurso` (listar)
+  - GET `/api/recurso/:id` (obtener uno)
+  - POST `/api/recurso` (crear)
+  - PUT `/api/recurso/:id` (actualizar)
+  - DELETE `/api/recurso/:id` (eliminar)
+- Los controladores exponen funciones para cada acción (ej: `getAllUsers`, `getUserById`, `createUser`, etc).
+- Los nombres de los endpoints y funciones deben ser claros y descriptivos.
+- Las importaciones deben ser tipo module (ESM).
+- Las importaciones deben usar un alias `@` para acceder a las carpetas principales de `src` (ej: `import UserController from '@/controllers/user.controller'`).
+- No se utiliza prefijo de versión (v1, v2, etc), pero sí el prefijo `/api` en todas las rutas.
+
+## Manejo de errores y respuestas
+
+- Usar un middleware centralizado para el manejo de errores en `src/middlewares/error.middleware.ts`.
+- Los controladores deben lanzar errores usando clases personalizadas (por ejemplo, `ApiError`) para diferenciar tipos de error (validación, autenticación, no encontrado, etc).
+- Se debe crear y mantener un catálogo de errores en un archivo dedicado dentro de la carpeta `src/errors/` (por ejemplo, `src/errors/error-catalog.ts`) para tener la mayoría de los errores controlados y documentados.
+- Las respuestas de error deben tener siempre el mismo formato:
+  ```json
+  {
+    "success": false,
+    "message": "Descripción del error",
+    "errors": [ ... ] // opcional, para detalles
+  }
+  ```
+- Las respuestas exitosas deben tener el formato:
+  ```json
+  {
+    "success": true,
+    "data": { ... }
+  }
+  ```
+- Los códigos de estado HTTP deben ser los correctos según la operación (200, 201, 400, 401, 404, 500, etc).
+- No se deben exponer detalles internos del servidor en los mensajes de error.
+
+## Middlewares personalizados
+
+- Todos los middlewares personalizados deben estar en la carpeta `src/middlewares/`.
+- Cada middleware debe estar en un archivo separado y su nombre debe reflejar su función (ej: `auth.middleware.ts`, `validateRequest.middleware.ts`).
+- Los middlewares deben exportarse como funciones nombradas o por defecto, según convenga.
+- Si un middleware es reutilizable en varios recursos, debe ser lo más genérico posible.
+- Los middlewares de validación deben ir antes de los controladores en las rutas.
+- Los middlewares de autenticación/autorización deben ir antes de los de validación, si aplica.
+- Si hay middlewares de manejo de errores, deben ir al final de la cadena de middlewares.
+- Se recomienda documentar brevemente la función de cada middleware en el archivo correspondiente.
+
+## Validaciones
+
+- Todas las validaciones de datos deben realizarse utilizando la librería Zod.
+- Los esquemas de validación deben estar en una carpeta dedicada: `src/validations/`.
+- Cada recurso debe tener su propio archivo de validaciones (ej: `user.validation.ts`, `property.validation.ts`).
+- Los esquemas de Zod deben ser reutilizables y exportados para ser usados en los middlewares de validación.
+- Las validaciones deben aplicarse como middlewares antes de los controladores en las rutas.
+- Los errores de validación deben ser capturados y enviados usando el formato de error definido en las reglas de manejo de errores.
+
+## Autenticación y autorización
+
+- La autenticación debe implementarse utilizando JWT (JSON Web Tokens).
+- Los middlewares de autenticación y autorización deben estar en la carpeta `src/middlewares/`.
+- La lógica de generación, validación y decodificación de JWT debe estar en servicios dentro de `src/services/`.
+- Los middlewares de autenticación deben ejecutarse antes que cualquier middleware de validación o controlador.
+- Los roles y permisos deben definirse en un archivo dedicado, por ejemplo, `src/config/roles.ts`
+- La autorización debe basarse en roles definidos y controlarse mediante middlewares específicos.
+- Los errores de autenticación/autorización deben manejarse usando el middleware de errores y el catálogo de errores.
+- No se deben exponer detalles sensibles en los mensajes de error relacionados con autenticación/autorización.
+- Los tokens o credenciales nunca deben ser logueados ni enviados en respuestas.
+
+## DTOs e interfaces
+
+- Todas las interfaces y tipos TypeScript (DTOs, modelos de datos, etc.) deben estar en la carpeta `src/interfaces/`.
+- Cada recurso debe tener su propio archivo de interfaces (ej: `user.interface.ts`, `property.interface.ts`).
+- Los DTOs (Data Transfer Objects) deben definirse como interfaces o tipos y exportarse desde los archivos correspondientes.
+- Si un DTO es compartido entre varios recursos, debe estar en un archivo común, por ejemplo, `src/interfaces/common.interface.ts`.
+- Los nombres de las interfaces deben ser descriptivos y usar PascalCase (ej: `UserDTO`, `PropertyDTO`).
+- Las interfaces deben ser utilizadas en los controladores, servicios y validaciones para garantizar el tipado estricto.
+- Se recomienda documentar brevemente cada interfaz o DTO.
+
+## Estructura de app.ts y server.ts
+
+- `src/app.ts` se encarga de:
+  - Inicializar la aplicación Express.
+  - Configurar middlewares globales (CORS, JSON, logger, etc).
+  - Configurar las rutas principales.
+  - Configurar el middleware de manejo de errores.
+  - Exportar la instancia de la app (no levanta el servidor).
+- `src/server.ts` se encarga de:
+  - Importar la app desde `app.ts`.
+  - Conectar a la base de datos (Prisma).
+  - Levantar el servidor y escuchar en el puerto definido.
+  - Manejar eventos de inicio y posibles errores de arranque.
+
+## ORM
+
+- El ORM a utilizar es Prisma.
+- Los esquemas y modelos de Prisma deben estar en la carpeta raíz del proyecto (`prisma/`), siguiendo la convención de Prisma.
+- Las operaciones de base de datos deben realizarse a través del cliente de Prisma, importado en los servicios correspondientes.
+- Las migraciones y seeds se gestionan con los comandos de Prisma.
+
+## Variables de entorno y configuración
+
+- Todas las variables de entorno deben gestionarse de forma unificada dentro de la carpeta `src/config/`.
+- Se debe tener un archivo de configuración que cargue las variables de entorno según el entorno (desarrollo, producción, test).
+- Los archivos `.env` pueden estar en la raíz del proyecto, pero su carga y acceso debe centralizarse en la lógica de `src/config/`.
+- No se debe acceder directamente a `process.env` fuera de los archivos de configuración.
+
+## Logs
+
+- El manejo de logs HTTP debe realizarse utilizando la librería Morgan.
+- Morgan debe configurarse como middleware global en `src/app.ts`.
+- El formato de los logs puede ser 'dev' en desarrollo y uno más detallado (como 'combined') en producción.
+- No se deben loguear datos sensibles ni tokens.
+
+## Instalación de dependencias
+
+- No se debe instalar ningún paquete o dependencia automáticamente.
+- Siempre que el agente requiera instalar un paquete, debe detenerse y pedir explícitamente al usuario que realice la instalación manualmente.
+- Se debe indicar el comando exacto a ejecutar, pero nunca ejecutarlo automáticamente.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

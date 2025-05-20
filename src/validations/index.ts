@@ -1,0 +1,1 @@
+// Aquí puedes exportar esquemas de validación comunes si es necesario 

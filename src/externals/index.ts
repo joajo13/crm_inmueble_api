@@ -1,0 +1,1 @@
+// Aquí puedes agregar integraciones con APIs externas, SDKs, etc. 
