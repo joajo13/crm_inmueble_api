@@ -74,12 +74,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/properties', propertyRoutes);
 
-// Capturar rutas no encontradas - debe ir después de todas las rutas válidas
-app.use('*', (req, res) => {
-  console.log(`Ruta no encontrada: ${req.originalUrl}`);
-  res.status(404).json({ 
+// Capturar rutas no encontradas sin usar path-to-regexp
+app.get('*', (req, res) => {
+  res.status(404).json({
     error: 'Ruta no encontrada',
-    path: req.originalUrl,
+    path: req.path,
     availableEndpoints: {
       root: '/',
       health: '/health',
@@ -88,6 +87,23 @@ app.use('*', (req, res) => {
       properties: '/api/properties'
     },
     message: 'Por favor, verifica la URL e intenta nuevamente'
+  });
+});
+
+// Para otros métodos HTTP (POST, PUT, DELETE, etc.)
+app.all('*', (req, res) => {
+  res.status(404).json({
+    error: 'Método no permitido o ruta no encontrada',
+    method: req.method,
+    path: req.path,
+    availableEndpoints: {
+      root: '/',
+      health: '/health',
+      auth: '/api/auth',
+      users: '/api/users',
+      properties: '/api/properties'
+    },
+    message: 'Por favor, verifica la URL y el método HTTP'
   });
 });
 
