@@ -19,4 +19,8 @@ export const ErrorCatalog = {
     status: 500,
     message: 'Error interno del servidor',
   },
+  BAD_CREDENTIALS: {
+    status: 401,
+    message: 'Credenciales inválidas',
+  },
 }; 
