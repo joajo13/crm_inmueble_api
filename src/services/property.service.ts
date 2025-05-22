@@ -58,6 +58,12 @@ const PropertyService = {
   },
   
   delete: async (id: number) => {
+    // Primero eliminamos las relaciones en UserOnProperty
+    await prisma.userOnProperty.deleteMany({
+      where: { propertyId: id }
+    });
+    
+    // Luego eliminamos la propiedad
     return await prisma.property.delete({
       where: { id }
     });

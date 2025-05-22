@@ -3,6 +3,7 @@ import jwt, { SignOptions } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { config } from '@/config';
 import { LoginDTO } from '@/interfaces/auth.interface';
+import { AppError } from '@/errors';
 
 const prisma = new PrismaClient();
 
@@ -27,10 +28,10 @@ const AuthService = {
       }
     });
     
-    if (!user) throw new Error('Usuario no encontrado');
+    if (!user) throw new AppError('BAD_CREDENTIALS', ['Credenciales incorrectas']);
     
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) throw new Error('Credenciales inválidas');
+    if (!isMatch) throw new AppError('BAD_CREDENTIALS', ['Credenciales incorrectas']);
     
     // Extraer los roles para incluirlos en el token
     const userRoles = user.roles.map(ur => ({

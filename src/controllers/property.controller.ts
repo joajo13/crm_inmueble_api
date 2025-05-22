@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import PropertyService from '../services/property.service';
+import { AppError } from '@/errors';
 
 const PropertyController = {
   getAllProperties: async (req: Request, res: Response, next: NextFunction) => {
@@ -17,8 +18,7 @@ const PropertyController = {
       const property = await PropertyService.getById(Number(id));
       
       if (!property) {
-        res.status(404).json({ success: false, message: 'Propiedad no encontrada' });
-        return;
+        throw new AppError('NOT_FOUND', ['Propiedad no encontrada'],);
       }
       
       res.json({ success: true, data: property });

@@ -23,7 +23,7 @@ const AuthController = {
       const accessToken = AuthService.generateAccessToken(payload.userId, payload.roles || []);
       res.json({ success: true, data: { accessToken } });
     } catch (error) {
-      res.status(401).json({ success: false, message: 'Refresh token inválido' });
+      next(error);
     }
   },
 };
