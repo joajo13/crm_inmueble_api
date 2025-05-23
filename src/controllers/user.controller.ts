@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import UserService from '../services/user.service';
+import UserService from '@/services/user.service';
+import { AppError } from '@/errors';
 
 const UserController = {
   getAllUsers: async (req: Request, res: Response, next: NextFunction) => {
@@ -17,8 +18,7 @@ const UserController = {
       const user = await UserService.getById(Number(id));
       
       if (!user) {
-        res.status(404).json({ success: false, message: 'Usuario no encontrado' });
-        return;
+        throw new AppError('NOT_FOUND', ['Usuario no encontrado']);
       }
       
       res.json({ success: true, data: user });
@@ -37,8 +37,7 @@ const UserController = {
       );
       
       if (existingUser) {
-        res.status(400).json({ success: false, message: 'El email ya está registrado' });
-        return;
+        throw new AppError('VALIDATION_ERROR', ['El email ya está registrado']);
       }
       
       const userData = { email, password, fullName, phone };

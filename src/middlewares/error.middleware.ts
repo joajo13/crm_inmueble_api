@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { AppError } from '../errors/app-error';
-import { ErrorCatalog } from '../errors/error-catalog';
+import { AppError } from '@/errors/app-error';
+import { ErrorCatalog } from '@/errors/error-catalog';
 
 const errorMiddleware = (err: any, req: Request, res: Response, next: NextFunction) => {
   console.error('Error:', err);

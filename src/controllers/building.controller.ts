@@ -1,44 +1,70 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { BuildingService } from '@/services/building.service';
 import { AppError } from '@/errors';
 
 const buildingService = new BuildingService();
 
-export const createBuilding = async (req: Request, res: Response) => {
-  const building = await buildingService.createBuilding(req.body);
-  res.status(201).json(building);
-};
+export const buildingController = {
+  createBuilding: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const building = await buildingService.createBuilding(req.body);
+      res.status(201).json({ success: true, data: building });
+    } catch (error) {
+      next(error);
+    }
+  },
 
-export const getAllBuildings = async (req: Request, res: Response) => {
-  const buildings = await buildingService.getAllBuildings();
-  res.json(buildings);
-};
+  getAllBuildings: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const buildings = await buildingService.getAllBuildings();
+      res.json({ success: true, data: buildings });
+    } catch (error) {
+      next(error);
+    }
+  },
 
-export const getBuildingById = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
-  const building = await buildingService.getBuildingById(id);
+  getBuildingById: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = parseInt(req.params.id);
+      const building = await buildingService.getBuildingById(id);
 
-  if (!building) {
-    throw new AppError('NOT_FOUND', [{ entity: 'Building', id }]);
+      if (!building) {
+        throw new AppError('NOT_FOUND', [`Building with id ${id} not found`]);
+      }
+
+      res.json({ success: true, data: building });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  updateBuilding: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = parseInt(req.params.id);
+      const building = await buildingService.updateBuilding(id, req.body);
+      res.json({ success: true, data: building });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  deleteBuilding: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = parseInt(req.params.id);
+      await buildingService.deleteBuilding(id);
+      res.status(200).json({ success: true, message: 'Building deleted successfully' });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  getBuildingProperties: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = parseInt(req.params.id);
+      const properties = await buildingService.getBuildingProperties(id);
+      res.json({ success: true, data: properties });
+    } catch (error) {
+      next(error);
+    }
   }
-
-  res.json(building);
-};
-
-export const updateBuilding = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
-  const building = await buildingService.updateBuilding(id, req.body);
-  res.json(building);
-};
-
-export const deleteBuilding = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
-  await buildingService.deleteBuilding(id);
-  res.status(204).send();
-};
-
-export const getBuildingProperties = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
-  const properties = await buildingService.getBuildingProperties(id);
-  res.json(properties);
 }; 

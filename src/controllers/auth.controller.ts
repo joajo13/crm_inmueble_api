@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import AuthService from '@/services/auth.service';
+import { AppError } from '@/errors';
 
 const AuthController = {
   login: async (req: Request, res: Response, next: NextFunction) => {
@@ -15,8 +16,7 @@ const AuthController = {
     try {
       const { refreshToken } = req.body;
       if (!refreshToken) {
-        res.status(400).json({ success: false, message: 'Refresh token requerido' });
-        return;
+        throw new AppError('VALIDATION_ERROR', ['Refresh token requerido']);
       }
       const payload = AuthService.verifyRefreshToken(refreshToken);
       // Obtener userId del payload y generar un nuevo token de acceso con sus roles

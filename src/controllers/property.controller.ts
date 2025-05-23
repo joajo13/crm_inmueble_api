@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import PropertyService from '../services/property.service';
+import PropertyService from '@/services/property.service';
 import { AppError } from '@/errors';
 
 const PropertyController = {

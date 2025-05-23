@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import * as buildingController from '@/controllers/building.controller';
+import { buildingController } from '@/controllers/building.controller';
 import authMiddleware from '@/middlewares/auth.middleware';
 import validateRequest from '@/middlewares/validateRequest.middleware';
 import { buildingCreateSchema, buildingIdParamSchema, buildingUpdateSchema } from '@/validations';
