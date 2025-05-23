@@ -9,4 +9,15 @@ export const propertySchema = z.object({
   habitaciones: z.number().int().min(1),
   banos: z.number().int().min(1),
   area: z.number().positive(),
+  buildingId: z.number().int().positive().optional(),
+});
+
+// Validación para parámetros de ID
+export const propertyIdParamSchema = z.object({
+  id: z.string().regex(/^\d+$/, { message: 'ID de propiedad inválido' })
+});
+
+// Validación para parámetros de buildingId
+export const propertyBuildingIdParamSchema = z.object({
+  buildingId: z.string().regex(/^\d+$/, { message: 'ID de edificio inválido' })
 }); 

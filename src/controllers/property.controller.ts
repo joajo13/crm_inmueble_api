@@ -61,6 +61,17 @@ const PropertyController = {
       next(error);
     }
   },
+  
+  getPropertiesByBuilding: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { buildingId } = req.params;
+      const properties = await PropertyService.getPropertiesByBuilding(Number(buildingId));
+      
+      res.json({ success: true, data: properties });
+    } catch (error) {
+      next(error);
+    }
+  }
 };
 
 export default PropertyController; 
