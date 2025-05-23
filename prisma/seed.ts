@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -42,17 +43,27 @@ async function main() {
     data: { code: 'HOUSE', description: 'Casa' }
   });
 
-  // Address
-  const address = await prisma.address.create({
+  // Address para propiedad
+  const propertyAddress = await prisma.address.create({
     data: {
       street: 'Calle Falsa',
       number: '123',
       city: 'Ciudad',
-      state: 'Estado',
-      country: 'País',
-      district: 'Centro',
+      province: 'Provincia',
       postalCode: '12345',
       extraInfo: 'Apto 1'
+    }
+  });
+
+  // Address para edificio
+  const buildingAddress = await prisma.address.create({
+    data: {
+      street: 'Avenida Principal',
+      number: '500',
+      city: 'Ciudad',
+      province: 'Provincia',
+      postalCode: '12345',
+      extraInfo: 'Edificio Residencial'
     }
   });
 
@@ -60,7 +71,7 @@ async function main() {
   const user = await prisma.user.create({
     data: {
       email: 'admin@demo.com',
-      password: '123456', // Recuerda hashear en producción
+      password: bcrypt.hashSync('password', 8), // Hasheado
       fullName: 'Admin Demo',
       phone: '555-1234',
       roles: {
@@ -69,33 +80,76 @@ async function main() {
     }
   });
 
-  // Propiedad
-  const property = await prisma.property.create({
+  // Propiedad independiente (casa)
+  const houseProperty = await prisma.property.create({
     data: {
-      title: 'Departamento en el centro',
-      description: 'Muy bien ubicado',
+      title: 'Casa en el centro',
+      description: 'Muy bien ubicada',
       listingTypeId: saleType.id,
       statusId: availableStatus.id,
-      propertyTypeId: apartmentType.id,
-      price: 100000,
+      propertyTypeId: houseType.id,
+      price: 200000,
       currency: 'USD',
-      addressId: address.id,
+      addressId: propertyAddress.id,
       agentId: user.id,
-      coveredAreaM2: 80,
-      totalAreaM2: 100,
+      coveredAreaM2: 120,
+      totalAreaM2: 200,
+      bedrooms: 3,
+      bathrooms: 2,
+      floors: 2,
+      yearBuilt: 2005,
+      garages: 2
+    }
+  });
+
+  // Edificio
+  const building = await prisma.building.create({
+    data: {
+      name: 'Edificio Residencial Torres',
+      addressId: buildingAddress.id,
+      floors: 5,
+      totalUnits: 10,
+      yearBuilt: 2015,
+      lat: 40.712776,
+      lng: -74.005974
+    }
+  });
+
+  // Propiedad para unidad
+  const apartmentProperty = await prisma.property.create({
+    data: {
+      title: 'Departamento en Torres',
+      description: 'Lindo departamento en edificio moderno',
+      listingTypeId: rentType.id,
+      statusId: availableStatus.id,
+      propertyTypeId: apartmentType.id,
+      price: 1200,
+      currency: 'USD',
+      addressId: buildingAddress.id, // Usa la misma dirección del edificio
+      agentId: user.id,
+      coveredAreaM2: 75,
+      totalAreaM2: 75,
       bedrooms: 2,
       bathrooms: 1,
-      floors: 1,
-      yearBuilt: 2010,
+      yearBuilt: 2015,
       garages: 1
     }
   });
 
-  // Relación UserOnProperty (el usuario es propietario de la propiedad)
+  // Relación UserOnProperty (el usuario es propietario de la propiedad casa)
   await prisma.userOnProperty.create({
     data: {
       userId: user.id,
-      propertyId: property.id,
+      propertyId: houseProperty.id,
+      actorRoleId: ownerActorRole.id
+    }
+  });
+
+  // Relación UserOnProperty (el usuario es dueño del departamento)
+  await prisma.userOnProperty.create({
+    data: {
+      userId: user.id,
+      propertyId: apartmentProperty.id,
       actorRoleId: ownerActorRole.id
     }
   });

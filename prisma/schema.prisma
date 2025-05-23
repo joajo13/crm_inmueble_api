@@ -91,6 +91,7 @@ model Address {
   postalCode String?
   extraInfo  String?
   properties Property[]
+  buildings  Building[]
 }
 
 /**
@@ -110,7 +111,7 @@ model Property {
   propertyTypeId Int
 
   price    Decimal @db.Decimal(14, 2)
-  currency String  @default("USD")
+  currency String  @default("ARS")
 
   // Location
   address   Address  @relation(fields: [addressId], references: [id])
@@ -131,8 +132,10 @@ model Property {
   propertyActors UserOnProperty[]
   agent          User?            @relation("AgentProperties", fields: [agentId], references: [id])
   agentId        Int?
-  building       Building?        @relation("BuildingAsProperty")
-  unit           Unit?
+
+  // Relación con edificios
+  building   Building? @relation(fields: [buildingId], references: [id])
+  buildingId Int?
 
   // Metadata
   createdAt DateTime @default(now())
@@ -142,24 +145,28 @@ model Property {
 }
 
 model Building {
-  id         Int      @id @default(autoincrement())
-  name       String
-  property   Property @relation("BuildingAsProperty", fields: [propertyId], references: [id])
-  propertyId Int      @unique
-  units      Unit[]
-}
+  id   Int    @id @default(autoincrement())
+  name String
 
-model Unit {
-  id         Int      @id @default(autoincrement())
-  identifier String? // “3-A” etc.
-  floor      Int?
-  building   Building @relation(fields: [buildingId], references: [id])
-  buildingId Int
+  // Dirección del edificio
+  address   Address @relation(fields: [addressId], references: [id])
+  addressId Int
 
-  property   Property @relation(fields: [propertyId], references: [id])
-  propertyId Int      @unique
+  // Un edificio puede tener varias propiedades
+  properties Property[]
 
-  @@unique([buildingId, identifier])
+  // Metadatos del edificio
+  yearBuilt  Int?
+  floors     Int?
+  totalUnits Int?
+
+  // Información de localización adicional
+  lat Decimal? @db.Decimal(9, 6)
+  lng Decimal? @db.Decimal(9, 6)
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 /**
