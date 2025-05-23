@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "CRM Inmobiliario API",
-    "description": "API para la gestión de propiedades inmobiliarias y usuarios",
+    "description": "API para la gestión de propiedades inmobiliarias, edificios y usuarios",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -21,7 +21,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n\t\"email\": \"usuario@ejemplo.com\",\n\t\"password\": \"contraseña123\"\n}"
+              "raw": "{\n\t\"email\": \"admin@inmuebles.com\",\n\t\"password\": \"Admin123!\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/login",
@@ -44,7 +44,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n\t\"refreshToken\": \"tu_refresh_token\"\n}"
+              "raw": "{\n\t\"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/refresh-token",
@@ -76,7 +76,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "properties"]
             },
-            "description": "Obtiene un listado de todas las propiedades disponibles."
+            "description": "Obtiene un listado de todas las propiedades disponibles. Incluye información del edificio relacionado si existe."
           },
           "response": []
         },
@@ -102,7 +102,7 @@
                 }
               ]
             },
-            "description": "Obtiene los detalles de una propiedad específica por su ID."
+            "description": "Obtiene los detalles de una propiedad específica por su ID. Incluye información del edificio relacionado si existe."
           },
           "response": []
         },
@@ -122,14 +122,14 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n\t\"title\": \"Apartamento en el centro\",\n\t\"description\": \"Hermoso apartamento con 2 habitaciones y 1 baño\",\n\t\"price\": 150000,\n\t\"listingTypeId\": 1,\n\t\"statusId\": 1,\n\t\"propertyTypeId\": 1,\n\t\"addressId\": 1\n}"
+              "raw": "{\n\t\"titulo\": \"Apartamento de lujo en Polanco\",\n\t\"descripcion\": \"Hermoso apartamento con 3 habitaciones, 2 baños, cocina integral y vista panorámica\",\n\t\"direccion\": \"Av. Presidente Masaryk 123, Polanco, CDMX\",\n\t\"precio\": 4500000,\n\t\"tipo\": \"apartamento\",\n\t\"habitaciones\": 3,\n\t\"banos\": 2,\n\t\"area\": 120,\n\t\"buildingId\": 1\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/properties",
               "host": ["{{baseUrl}}"],
               "path": ["api", "properties"]
             },
-            "description": "Crea una nueva propiedad inmobiliaria."
+            "description": "Crea una nueva propiedad inmobiliaria. Puede asociarse opcionalmente a un edificio mediante el campo buildingId."
           },
           "response": []
         },
@@ -149,7 +149,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n\t\"title\": \"Apartamento remodelado en el centro\",\n\t\"price\": 160000,\n\t\"statusId\": 2\n}"
+              "raw": "{\n\t\"titulo\": \"Apartamento remodelado en Polanco\",\n\t\"precio\": 4650000,\n\t\"descripcion\": \"Hermoso apartamento recién renovado con 3 habitaciones, 2 baños, cocina integral y vista panorámica\",\n\t\"buildingId\": 2\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/properties/:id",
@@ -163,7 +163,7 @@
                 }
               ]
             },
-            "description": "Actualiza la información de una propiedad existente."
+            "description": "Actualiza la información de una propiedad existente. Puede cambiar su relación con edificios mediante el campo buildingId (null para desasociar)."
           },
           "response": []
         },
@@ -190,6 +190,32 @@
               ]
             },
             "description": "Elimina una propiedad inmobiliaria por su ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener propiedades por edificio",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/properties/building/:buildingId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "properties", "building", ":buildingId"],
+              "variable": [
+                {
+                  "key": "buildingId",
+                  "value": "1",
+                  "description": "ID del edificio"
+                }
+              ]
+            },
+            "description": "Obtiene todas las propiedades que pertenecen a un edificio específico."
           },
           "response": []
         }
@@ -256,7 +282,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n\t\"email\": \"nuevo@ejemplo.com\",\n\t\"password\": \"contraseña123\",\n\t\"fullName\": \"Usuario Nuevo\",\n\t\"phone\": \"+1234567890\"\n}"
+              "raw": "{\n\t\"email\": \"vendedor@inmuebles.com\",\n\t\"password\": \"Vendedor123!\",\n\t\"fullName\": \"Juan Pérez Venta\",\n\t\"phone\": \"+525512345678\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/users",
@@ -283,7 +309,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n\t\"fullName\": \"Nombre Actualizado\",\n\t\"phone\": \"+0987654321\"\n}"
+              "raw": "{\n\t\"fullName\": \"Juan Pérez Ventas\",\n\t\"phone\": \"+525587654321\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/users/:id",
@@ -358,6 +384,170 @@
               ]
             },
             "description": "Actualiza los roles asignados a un usuario."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Edificios",
+      "description": "Endpoints para gestionar edificios",
+      "item": [
+        {
+          "name": "Obtener todos los edificios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/buildings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buildings"]
+            },
+            "description": "Obtiene un listado de todos los edificios registrados. Incluye las propiedades relacionadas."
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener edificio por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/buildings/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buildings", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "ID del edificio"
+                }
+              ]
+            },
+            "description": "Obtiene los detalles de un edificio específico por su ID. Incluye las propiedades relacionadas."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear nuevo edificio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"name\": \"Torre Reforma\",\n\t\"addressId\": 1,\n\t\"yearBuilt\": 2015,\n\t\"floors\": 57,\n\t\"totalUnits\": 120,\n\t\"lat\": 19.424438,\n\t\"lng\": -99.175772\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/buildings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buildings"]
+            },
+            "description": "Crea un nuevo edificio. Las propiedades se pueden asociar posteriormente."
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar edificio",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"name\": \"Torre Reforma Actualizada\",\n\t\"totalUnits\": 125,\n\t\"lat\": 19.424440,\n\t\"lng\": -99.175775\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/buildings/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buildings", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "ID del edificio a actualizar"
+                }
+              ]
+            },
+            "description": "Actualiza la información de un edificio existente."
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar edificio",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/buildings/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buildings", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "ID del edificio a eliminar"
+                }
+              ]
+            },
+            "description": "Elimina un edificio por su ID. Las propiedades asociadas se desvinculan automáticamente del edificio."
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener propiedades de un edificio",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/buildings/:id/properties",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buildings", ":id", "properties"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "ID del edificio"
+                }
+              ]
+            },
+            "description": "Obtiene todas las propiedades pertenecientes a un edificio específico."
           },
           "response": []
         }
