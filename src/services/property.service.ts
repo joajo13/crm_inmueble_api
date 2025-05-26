@@ -1,4 +1,5 @@
 import { PrismaClient, Prisma } from '@prisma/client';
+import { addressService } from './address.service';
 
 const prisma = new PrismaClient();
 
@@ -39,8 +40,7 @@ const PropertyService = {
         address: true,
         propertyType: true,
         listingType: true,
-        status: true,
-        agent: true
+        status: true
       }
     });
   },
@@ -59,42 +59,40 @@ const PropertyService = {
     });
   },
   
-  create: async (data: PropertyData) => {
+  create: async (data: any) => {
+    // Extraer datos de dirección
+    const { address, ...propertyData } = data;
+    // Buscar dirección existente
+    let addressRecord = await addressService.findAddressByFields(address);
+    if (!addressRecord) {
+      addressRecord = await addressService.createAddress(address);
+    }
+    // Crear la propiedad con el addressId encontrado o creado
     const createData: Prisma.PropertyCreateInput = {
-      title: data.title,
-      description: data.description,
-      price: new Prisma.Decimal(data.price.toString()),
-      currency: data.currency || 'ARS',
-      
-      // Conexiones a modelos relacionados
-      listingType: { connect: { id: data.listingTypeId } },
-      status: { connect: { id: data.statusId } },
-      propertyType: { connect: { id: data.propertyTypeId } },
-      address: { connect: { id: data.addressId } },
-      
-      // Características físicas
-      coveredAreaM2: data.coveredAreaM2,
-      totalAreaM2: data.totalAreaM2,
-      bedrooms: data.bedrooms,
-      bathrooms: data.bathrooms,
-      floors: data.floors,
-      yearBuilt: data.yearBuilt,
-      garages: data.garages,
-      
-      // Datos de geolocalización
-      lat: data.lat ? new Prisma.Decimal(data.lat.toString()) : null,
-      lng: data.lng ? new Prisma.Decimal(data.lng.toString()) : null,
+      title: propertyData.title,
+      description: propertyData.description,
+      price: new Prisma.Decimal(propertyData.price.toString()),
+      currency: propertyData.currency || 'ARS',
+      listingType: { connect: { id: propertyData.listingTypeId } },
+      status: { connect: { id: propertyData.statusId } },
+      propertyType: { connect: { id: propertyData.propertyTypeId } },
+      address: { connect: { id: addressRecord.id } },
+      coveredAreaM2: propertyData.coveredAreaM2,
+      totalAreaM2: propertyData.totalAreaM2,
+      bedrooms: propertyData.bedrooms,
+      bathrooms: propertyData.bathrooms,
+      floors: propertyData.floors,
+      yearBuilt: propertyData.yearBuilt,
+      garages: propertyData.garages,
+      lat: propertyData.lat ? new Prisma.Decimal(propertyData.lat.toString()) : null,
+      lng: propertyData.lng ? new Prisma.Decimal(propertyData.lng.toString()) : null,
     };
-    
-    // Conexiones opcionales
-    if (data.buildingId) {
-      createData.building = { connect: { id: data.buildingId } };
+    if (propertyData.buildingId) {
+      createData.building = { connect: { id: propertyData.buildingId } };
     }
-    
-    if (data.agentId) {
-      createData.agent = { connect: { id: data.agentId } };
+    if (propertyData.agentId) {
+      createData.agent = { connect: { id: propertyData.agentId } };
     }
-    
     return await prisma.property.create({
       data: createData,
       include: {
