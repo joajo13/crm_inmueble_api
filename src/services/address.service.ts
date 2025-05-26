@@ -92,5 +92,28 @@ export const addressService = {
       },
       take: 50
     });
+  },
+
+  /**
+   * Buscar una dirección por todos los campos relevantes
+   */
+  async findAddressByFields(fields: {
+    street: string;
+    number?: string | null;
+    city: string;
+    province: string;
+    postalCode?: string | null;
+    extraInfo?: string | null;
+  }): Promise<Address | null> {
+    return prisma.address.findFirst({
+      where: {
+        street: fields.street,
+        number: fields.number ?? undefined,
+        city: fields.city,
+        province: fields.province,
+        postalCode: fields.postalCode ?? undefined,
+        extraInfo: fields.extraInfo ?? undefined,
+      }
+    });
   }
 }; 
