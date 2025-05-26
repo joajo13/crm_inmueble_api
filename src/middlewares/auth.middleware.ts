@@ -24,7 +24,6 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   
   try {
     const payload = AuthService.verifyAccessToken(token);
-    req.user = payload;
     next();
   } catch (error) {
     res.status(401).json({ success: false, message: 'Token inválido' });
