@@ -29,9 +29,11 @@ const PropertyController = {
   
   createProperty: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const propertyData = req.body;
-      const newProperty = await PropertyService.create(propertyData);
-      
+      const { address, ...propertyData } = req.body;
+      if (!address) {
+        throw new AppError('VALIDATION_ERROR', ['La dirección es requerida']);
+      }
+      const newProperty = await PropertyService.create({ ...propertyData, address });
       res.status(201).json({ success: true, data: newProperty });
     } catch (error) {
       next(error);
