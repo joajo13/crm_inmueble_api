@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, User } from '@prisma/client';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { config } from '@/config';
@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
 const { secret, refreshSecret } = config.jwt;
 
 interface JwtPayload {
-  userId: number;
+  user: User;
   roles?: Array<{id: number, code: string}>;
 }
 
@@ -40,12 +40,12 @@ const AuthService = {
     }));
     
     const accessToken = jwt.sign(
-      { userId: user.id, roles: userRoles } as JwtPayload, 
+      { user, roles: userRoles } as JwtPayload, 
       config.jwt.secret
     );
     
     const refreshToken = jwt.sign(
-      { userId: user.id } as JwtPayload, 
+      { user } as JwtPayload, 
       config.jwt.refreshSecret
     );
     
@@ -60,11 +60,18 @@ const AuthService = {
     return jwt.verify(token, config.jwt.refreshSecret) as JwtPayload;
   },
   
-  generateAccessToken: (userId: number, roles: Array<{id: number, code: string}>) => {
-    return jwt.sign(
-      { userId, roles } as JwtPayload, 
+  generateNewTokens: (user: User, roles: Array<{id: number, code: string}>) => {
+    const accessToken = jwt.sign(
+      { user, roles } as JwtPayload, 
       config.jwt.secret
     );
+    
+    const refreshToken = jwt.sign(
+      { user } as JwtPayload, 
+      config.jwt.refreshSecret
+    );
+    
+    return { accessToken, refreshToken };
   },
 };
 
