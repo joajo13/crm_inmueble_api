@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { addressSchema } from './address.validation';
 
 // Esquema principal de propiedades alineado con Prisma y el servicio
 export const propertySchema = z.object({
@@ -31,8 +32,10 @@ export const propertySchema = z.object({
   buildingId: z.number().int().optional().nullable(),
 });
 
-// Esquema para crear propiedades
-export const createPropertySchema = propertySchema;
+// Esquema para crear propiedades (usa addressSchema en vez de addressId)
+export const createPropertySchema = propertySchema.omit({ addressId: true }).extend({
+  address: addressSchema
+});
 
 // Esquema para actualizar propiedades (todos los campos son opcionales)
 export const updatePropertySchema = propertySchema.partial();
