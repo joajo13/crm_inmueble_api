@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
-import AuthService from '@/services/auth.service';
-import { AppError } from '@/errors';
+import { Request, Response, NextFunction } from "express";
+import AuthService from "@/services/auth.service";
+import { AppError } from "@/errors";
 
 const AuthController = {
   login: async (req: Request, res: Response, next: NextFunction) => {
@@ -14,18 +14,21 @@ const AuthController = {
   },
   refreshToken: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { refreshToken } = req.body;
-      if (!refreshToken) {
-        throw new AppError('VALIDATION_ERROR', ['Refresh token requerido']);
+      const { refreshToken: refreshTokenFromBody } = req.body;
+      if (!refreshTokenFromBody) {
+        throw new AppError("VALIDATION_ERROR", ["Refresh token requerido"]);
       }
-      const payload = AuthService.verifyRefreshToken(refreshToken);
+      const payload = AuthService.verifyRefreshToken(refreshTokenFromBody);
       // Obtener userId del payload y generar un nuevo token de acceso con sus roles
-      const accessToken = AuthService.generateAccessToken(payload.userId, payload.roles || []);
-      res.json({ success: true, data: { accessToken } });
+      const { accessToken, refreshToken } = AuthService.generateNewTokens(
+        payload.user,
+        payload.roles || []
+      );
+      res.json({ success: true, data: { accessToken, refreshToken } });
     } catch (error) {
       next(error);
     }
   },
 };
 
-export default AuthController; 
+export default AuthController;
