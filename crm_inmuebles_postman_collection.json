@@ -6,6 +6,23 @@
   },
   "item": [
     {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        },
+        "description": "Verifica el estado de la API."
+      }
+    },
+    {
       "name": "Autenticación",
       "description": "Endpoints para la autenticación de usuarios",
       "item": [
@@ -25,12 +42,17 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
             },
             "description": "Inicia sesión con email y contraseña para obtener token de acceso."
-          },
-          "response": []
+          }
         },
         {
           "name": "Refrescar Token",
@@ -48,12 +70,17 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/refresh-token",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "refresh-token"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "refresh-token"
+              ]
             },
             "description": "Obtiene un nuevo token de acceso usando el refresh token."
-          },
-          "response": []
+          }
         }
       ]
     },
@@ -73,12 +100,16 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/properties",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "properties"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "properties"
+              ]
             },
             "description": "Obtiene un listado de todas las propiedades disponibles. Incluye información del edificio relacionado si existe."
-          },
-          "response": []
+          }
         },
         {
           "name": "Obtener propiedad por ID",
@@ -92,8 +123,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/properties/:id",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "properties", ":id"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "properties",
+                ":id"
+              ],
               "variable": [
                 {
                   "key": "id",
@@ -103,8 +140,7 @@
               ]
             },
             "description": "Obtiene los detalles de una propiedad específica por su ID. Incluye información del edificio relacionado si existe."
-          },
-          "response": []
+          }
         },
         {
           "name": "Crear nueva propiedad",
@@ -126,12 +162,16 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/properties",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "properties"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "properties"
+              ]
             },
             "description": "Crea una nueva propiedad inmobiliaria. Puede asociarse opcionalmente a un edificio mediante el campo buildingId."
-          },
-          "response": []
+          }
         },
         {
           "name": "Actualizar propiedad",
@@ -153,8 +193,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/properties/:id",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "properties", ":id"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "properties",
+                ":id"
+              ],
               "variable": [
                 {
                   "key": "id",
@@ -164,8 +210,7 @@
               ]
             },
             "description": "Actualiza la información de una propiedad existente. Puede cambiar su relación con edificios mediante el campo buildingId (null para desasociar)."
-          },
-          "response": []
+          }
         },
         {
           "name": "Eliminar propiedad",
@@ -179,8 +224,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/properties/:id",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "properties", ":id"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "properties",
+                ":id"
+              ],
               "variable": [
                 {
                   "key": "id",
@@ -190,8 +241,7 @@
               ]
             },
             "description": "Elimina una propiedad inmobiliaria por su ID."
-          },
-          "response": []
+          }
         },
         {
           "name": "Obtener propiedades por edificio",
@@ -205,8 +255,15 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/properties/building/:buildingId",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "properties", "building", ":buildingId"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "properties",
+                "building",
+                ":buildingId"
+              ],
               "variable": [
                 {
                   "key": "buildingId",
@@ -216,8 +273,7 @@
               ]
             },
             "description": "Obtiene todas las propiedades que pertenecen a un edificio específico."
-          },
-          "response": []
+          }
         }
       ]
     },
@@ -237,12 +293,16 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/users",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
             },
             "description": "Obtiene un listado de todos los usuarios (requiere autenticación)."
-          },
-          "response": []
+          }
         },
         {
           "name": "Obtener usuario por ID",
@@ -256,8 +316,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/users/:id",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", ":id"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                ":id"
+              ],
               "variable": [
                 {
                   "key": "id",
@@ -267,8 +333,7 @@
               ]
             },
             "description": "Obtiene los detalles de un usuario específico por su ID."
-          },
-          "response": []
+          }
         },
         {
           "name": "Crear nuevo usuario",
@@ -278,6 +343,10 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
               }
             ],
             "body": {
@@ -286,12 +355,16 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/users",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
             },
             "description": "Crea un nuevo usuario en el sistema."
-          },
-          "response": []
+          }
         },
         {
           "name": "Actualizar usuario",
@@ -313,8 +386,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/users/:id",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", ":id"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                ":id"
+              ],
               "variable": [
                 {
                   "key": "id",
@@ -324,8 +403,7 @@
               ]
             },
             "description": "Actualiza la información de un usuario existente."
-          },
-          "response": []
+          }
         },
         {
           "name": "Eliminar usuario",
@@ -339,8 +417,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/users/:id",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", ":id"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                ":id"
+              ],
               "variable": [
                 {
                   "key": "id",
@@ -350,8 +434,7 @@
               ]
             },
             "description": "Elimina un usuario por su ID."
-          },
-          "response": []
+          }
         },
         {
           "name": "Actualizar roles de usuario",
@@ -373,8 +456,15 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/users/:id/roles",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", ":id", "roles"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                ":id",
+                "roles"
+              ],
               "variable": [
                 {
                   "key": "id",
@@ -384,8 +474,7 @@
               ]
             },
             "description": "Actualiza los roles asignados a un usuario."
-          },
-          "response": []
+          }
         }
       ]
     },
@@ -405,12 +494,16 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/buildings",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "buildings"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "buildings"
+              ]
             },
             "description": "Obtiene un listado de todos los edificios registrados. Incluye las propiedades relacionadas."
-          },
-          "response": []
+          }
         },
         {
           "name": "Obtener edificio por ID",
@@ -424,8 +517,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/buildings/:id",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "buildings", ":id"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "buildings",
+                ":id"
+              ],
               "variable": [
                 {
                   "key": "id",
@@ -435,8 +534,7 @@
               ]
             },
             "description": "Obtiene los detalles de un edificio específico por su ID. Incluye las propiedades relacionadas."
-          },
-          "response": []
+          }
         },
         {
           "name": "Crear nuevo edificio",
@@ -458,12 +556,16 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/buildings",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "buildings"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "buildings"
+              ]
             },
             "description": "Crea un nuevo edificio. Las propiedades se pueden asociar posteriormente."
-          },
-          "response": []
+          }
         },
         {
           "name": "Actualizar edificio",
@@ -485,8 +587,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/buildings/:id",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "buildings", ":id"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "buildings",
+                ":id"
+              ],
               "variable": [
                 {
                   "key": "id",
@@ -496,8 +604,7 @@
               ]
             },
             "description": "Actualiza la información de un edificio existente."
-          },
-          "response": []
+          }
         },
         {
           "name": "Eliminar edificio",
@@ -511,8 +618,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/buildings/:id",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "buildings", ":id"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "buildings",
+                ":id"
+              ],
               "variable": [
                 {
                   "key": "id",
@@ -522,8 +635,7 @@
               ]
             },
             "description": "Elimina un edificio por su ID. Las propiedades asociadas se desvinculan automáticamente del edificio."
-          },
-          "response": []
+          }
         },
         {
           "name": "Obtener propiedades de un edificio",
@@ -537,8 +649,15 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/buildings/:id/properties",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "buildings", ":id", "properties"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "buildings",
+                ":id",
+                "properties"
+              ],
               "variable": [
                 {
                   "key": "id",
@@ -548,8 +667,7 @@
               ]
             },
             "description": "Obtiene todas las propiedades pertenecientes a un edificio específico."
-          },
-          "response": []
+          }
         }
       ]
     },
@@ -559,68 +677,150 @@
       "item": [
         {
           "name": "Obtener todos los tipos de listado",
-          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/api/listing-types", "host": ["{{baseUrl}}"], "path": ["api","listing-types"] } },
-          "response": [
-            {
-              "name": "Ejemplo lista",
-              "status": "200 OK",
-              "code": 200,
-              "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "[{ \"id\": 1, \"code\": \"SALE\", \"description\": \"En venta\" }]"
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/listing-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "listing-types"
+              ]
             }
-          ]
+          }
         },
         {
           "name": "Obtener tipo de listado por ID",
-          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/api/listing-types/:id", "host": ["{{baseUrl}}"], "path": ["api","listing-types",":id"], "variable": [{ "key": "id","value": "1" }] } },
-          "response": [
-            {
-              "name": "Ejemplo uno",
-              "status": "200 OK",
-              "code": 200,
-              "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{ \"id\": 1, \"code\": \"SALE\", \"description\": \"En venta\" }"
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/listing-types/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "listing-types",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
             }
-          ]
+          }
         },
         {
           "name": "Crear tipo de listado",
-          "request": { "method": "POST", "header": [{ "key": "Content-Type","value": "application/json" },{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "body": { "mode": "raw", "raw": "{ \"code\": \"RENT\", \"description\": \"En alquiler\" }" }, "url": { "raw": "{{baseUrl}}/api/listing-types", "host": ["{{baseUrl}}"], "path": ["api","listing-types"] } },
-          "response": [
-            {
-              "name": "Ejemplo creado",
-              "status": "201 Created",
-              "code": 201,
-              "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{ \"id\": 2, \"code\": \"RENT\", \"description\": \"En alquiler\" }"
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"code\": \"RENT\", \"description\": \"En alquiler\" }"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/listing-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "listing-types"
+              ]
             }
-          ]
+          }
         },
         {
           "name": "Actualizar tipo de listado",
-          "request": { "method": "PUT", "header": [{ "key": "Content-Type","value": "application/json" },{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "body": { "mode": "raw", "raw": "{ \"description\": \"Venta actualizada\" }" }, "url": { "raw": "{{baseUrl}}/api/listing-types/:id", "host": ["{{baseUrl}}"], "path": ["api","listing-types",":id"], "variable": [{ "key": "id","value": "1" }] } },
-          "response": [
-            {
-              "name": "Ejemplo actualizado",
-              "status": "200 OK",
-              "code": 200,
-              "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{ \"id\": 1, \"code\": \"SALE\", \"description\": \"Venta actualizada\" }"
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"description\": \"Venta actualizada\" }"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/listing-types/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "listing-types",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
             }
-          ]
+          }
         },
         {
           "name": "Eliminar tipo de listado",
-          "request": { "method": "DELETE", "header": [{ "key": "Authorization","value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/api/listing-types/:id", "host": ["{{baseUrl}}"], "path": ["api","listing-types",":id"], "variable": [{ "key": "id","value": "1" }] } },
-          "response": [
-            {
-              "name": "Ejemplo eliminado",
-              "status": "200 OK",
-              "code": 200,
-              "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{ \"message\": \"Tipo de listado eliminado correctamente\" }"
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/listing-types/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "listing-types",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
             }
-          ]
+          }
         }
       ]
     },
@@ -632,88 +832,148 @@
           "name": "Obtener todos los estados de propiedad",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/property-statuses", "host": ["{{baseUrl}}"], "path": ["api","property-statuses"] }
-          },
-          "response": [
-            {
-              "name": "Ejemplo lista",
-              "status": "200 OK",
-              "code": 200,
-              "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "[{ \"id\": 1, \"code\": \"AVAILABLE\", \"description\": \"Disponible\" }]"
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/property-status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "property-status"
+              ]
             }
-          ]
+          }
         },
         {
           "name": "Obtener estado de propiedad por ID",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/property-statuses/:id", "host": ["{{baseUrl}}"], "path": ["api","property-statuses",":id"], "variable":[{"key":"id","value":"1"}] }
-          },
-          "response": [
-            {
-              "name": "Ejemplo uno",
-              "status": "200 OK",
-              "code": 200,
-              "header":[{ "key":"Content-Type","value":"application/json" }],
-              "body":"{ \"id\": 1, \"code\": \"AVAILABLE\", \"description\": \"Disponible\" }"
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/property-status/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "property-status",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
             }
-          ]
+          }
         },
         {
           "name": "Crear estado de propiedad",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type","value":"application/json" },{ "key":"Authorization","value":"Bearer {{accessToken}}" }],
-            "body": { "mode":"raw", "raw":"{ \"code\": \"SOLD\", \"description\": \"Vendido\" }" },
-            "url": { "raw": "{{baseUrl}}/api/property-statuses", "host": ["{{baseUrl}}"], "path": ["api","property-statuses"] }
-          },
-          "response": [
-            {
-              "name": "Ejemplo creado",
-              "status": "201 Created",
-              "code": 201,
-              "header":[{"key":"Content-Type","value":"application/json"}],
-              "body":"{ \"id\": 2, \"code\": \"SOLD\", \"description\": \"Vendido\" }"
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"code\": \"SOLD\", \"description\": \"Vendido\" }"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/property-status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "property-status"
+              ]
             }
-          ]
+          }
         },
         {
           "name": "Actualizar estado de propiedad",
           "request": {
-            "method":"PUT",
-            "header":[{ "key":"Content-Type","value":"application/json" },{ "key":"Authorization","value":"Bearer {{accessToken}}" }],
-            "body": {"mode":"raw","raw":"{ \"description\": \"Disponible actualizada\" }"},
-            "url": {"raw":"{{baseUrl}}/api/property-statuses/:id","host":["{{baseUrl}}"],"path":["api","property-statuses",":id"],"variable":[{"key":"id","value":"1"}]}
-          },
-          "response":[
-            {
-              "name":"Ejemplo actualizado",
-              "status":"200 OK",
-              "code":200,
-              "header":[{"key":"Content-Type","value":"application/json"}],
-              "body":"{ \"id\": 1, \"code\": \"AVAILABLE\", \"description\": \"Disponible actualizada\" }"
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"description\": \"Disponible actualizada\" }"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/property-status/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "property-status",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
             }
-          ]
+          }
         },
         {
-          "name":"Eliminar estado de propiedad",
-          "request":{
-            "method":"DELETE",
-            "header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],
-            "url": {"raw":"{{baseUrl}}/api/property-statuses/:id","host":["{{baseUrl}}"],"path":["api","property-statuses",":id"],"variable":[{"key":"id","value":"1"}]}
-          },
-          "response":[
-            {
-              "name":"Ejemplo eliminado",
-              "status":"200 OK",
-              "code":200,
-              "header":[{"key":"Content-Type","value":"application/json"}],
-              "body":"{ \"message\": \"Estado de propiedad eliminado correctamente\" }"
+          "name": "Eliminar estado de propiedad",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/property-status/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "property-status",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
             }
-          ]
+          }
         }
       ]
     },
@@ -723,28 +983,150 @@
       "item": [
         {
           "name": "Obtener todos los tipos de propiedad",
-          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/api/property-types", "host": ["{{baseUrl}}"], "path": ["api","property-types"] } },
-          "response": [ { "name": "Ejemplo lista", "status": "200 OK", "code": 200, "header": [{ "key": "Content-Type","value": "application/json" }], "body": "[{ \"id\": 1, \"code\": \"HOUSE\", \"description\": \"Casa\" }]" } ]
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/property-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "property-types"
+              ]
+            }
+          }
         },
         {
           "name": "Obtener tipo de propiedad por ID",
-          "request": { "method": "GET", "header": [{ "key": "Authorization","value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/api/property-types/:id", "host": ["{{baseUrl}}"], "path": ["api","property-types",":id"], "variable": [{ "key":"id","value":"1" }] } },
-          "response": [ { "name":"Ejemplo uno","status":"200 OK","code":200,"header":[{"key":"Content-Type","value":"application/json"}],"body":"{ \"id\": 1, \"code\": \"HOUSE\", \"description\": \"Casa\" }" } ]
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/property-types/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "property-types",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
         },
         {
           "name": "Crear tipo de propiedad",
-          "request": { "method":"POST","header":[{ "key":"Content-Type","value":"application/json"},{ "key":"Authorization","value":"Bearer {{accessToken}}" }],"body":{"mode":"raw","raw":"{ \"code\": \"APARTMENT\", \"description\": \"Apartamento\" }"},"url":{"raw":"{{baseUrl}}/api/property-types","host":["{{baseUrl}}"],"path":["api","property-types"]} },
-          "response": [ { "name":"Ejemplo creado","status":"201 Created","code":201,"header":[{"key":"Content-Type","value":"application/json"}],"body":"{ \"id\": 2, \"code\": \"APARTMENT\", \"description\": \"Apartamento\" }" } ]
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"code\": \"APARTMENT\", \"description\": \"Apartamento\" }"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/property-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "property-types"
+              ]
+            }
+          }
         },
         {
-          "name":"Actualizar tipo de propiedad",
-          "request":{ "method":"PUT","header":[{ "key":"Content-Type","value":"application/json"},{ "key":"Authorization","value":"Bearer {{accessToken}}" }],"body":{"mode":"raw","raw":"{ \"description\": \"Casa actualizada\" }"},"url":{"raw":"{{baseUrl}}/api/property-types/:id","host":["{{baseUrl}}"],"path":["api","property-types",":id"],"variable":[{"key":"id","value":"1"}]} },
-          "response":[ { "name":"Ejemplo actualizado","status":"200 OK","code":200,"header":[{"key":"Content-Type","value":"application/json"}],"body":"{ \"id\": 1, \"code\": \"HOUSE\", \"description\": \"Casa actualizada\" }" } ]
+          "name": "Actualizar tipo de propiedad",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"description\": \"Casa actualizada\" }"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/property-types/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "property-types",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
         },
         {
-          "name":"Eliminar tipo de propiedad",
-          "request":{ "method":"DELETE","header":[{ "key":"Authorization","value":"Bearer {{accessToken}}" }],"url":{"raw":"{{baseUrl}}/api/property-types/:id","host":["{{baseUrl}}"],"path":["api","property-types",":id"],"variable":[{"key":"id","value":"1"}]} },
-          "response":[ { "name":"Ejemplo eliminado","status":"200 OK","code":200,"header":[{"key":"Content-Type","value":"application/json"}],"body":"{ \"message\": \"Tipo de propiedad eliminado correctamente\" }" } ]
+          "name": "Eliminar tipo de propiedad",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/property-types/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "property-types",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
         }
       ]
     },
@@ -754,33 +1136,179 @@
       "item": [
         {
           "name": "Obtener todas las direcciones",
-          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/addresses", "host": ["{{baseUrl}}"], "path": ["api","addresses"] } },
-          "response": [ { "name":"Ejemplo lista","status":"200 OK","code":200,"header":[{"key":"Content-Type","value":"application/json"}],"body":"{ \"data\": [{ \"id\": 1, \"street\": \"Main St\", \"number\": \"123\", \"city\": \"Ciudad\", \"province\": \"Provincia\", \"postalCode\": \"1000\", \"extraInfo\": null }], \"pagination\":{ \"total\":1, \"page\":1, \"limit\":10, \"totalPages\":1 } }" } ]
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/addresses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "addresses"
+              ]
+            }
+          }
         },
         {
-          "name":"Buscar direcciones por ciudad/provincia",
-          "request":{ "method":"GET","url":{"raw":"{{baseUrl}}/api/addresses/search?city=Ciudad","host":["{{baseUrl}}"],"path":["api","addresses","search"],"query":[{"key":"city","value":"Ciudad"}] } },
-          "response":[ { "name":"Ejemplo búsqueda","status":"200 OK","code":200,"header":[{"key":"Content-Type","value":"application/json"}],"body":"[{ \"id\": 1, \"street\": \"Main St\", \"number\": \"123\", \"city\": \"Ciudad\", \"province\": \"Provincia\", \"postalCode\": \"1000\", \"extraInfo\": null }]" } ]
+          "name": "Buscar direcciones por ciudad/provincia",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/addresses/search?city=Ciudad",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "addresses",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Ciudad"
+                }
+              ]
+            }
+          }
         },
         {
-          "name":"Obtener dirección por ID",
-          "request":{ "method":"GET","url":{"raw":"{{baseUrl}}/api/addresses/:id","host":["{{baseUrl}}"],"path":["api","addresses",":id"],"variable":[{"key":"id","value":"1"}] } },
-          "response":[ { "name":"Ejemplo uno","status":"200 OK","code":200,"header":[{"key":"Content-Type","value":"application/json"}],"body":"{ \"id\":1, \"street\": \"Main St\", \"number\": \"123\", \"city\": \"Ciudad\", \"province\": \"Provincia\", \"postalCode\": \"1000\", \"extraInfo\": null }" } ]
+          "name": "Obtener dirección por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/addresses/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "addresses",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
         },
         {
-          "name":"Crear dirección",
-          "request":{ "method":"POST","header":[{ "key":"Content-Type","value":"application/json" },{ "key":"Authorization","value":"Bearer {{accessToken}}" }],"body":{"mode":"raw","raw":"{ \"street\": \"Second St\", \"number\": \"45\", \"city\": \"Otra\", \"province\": \"Prov\", \"postalCode\": \"2000\" }"},"url":{"raw":"{{baseUrl}}/api/addresses","host":["{{baseUrl}}"],"path":["api","addresses"]} },
-          "response":[ { "name":"Ejemplo creado","status":"201 Created","code":201,"header":[{"key":"Content-Type","value":"application/json"}],"body":"{ \"id\":2, \"street\": \"Second St\", \"number\": \"45\", \"city\": \"Otra\", \"province\": \"Prov\", \"postalCode\": \"2000\", \"extraInfo\": null }" } ]
+          "name": "Crear dirección",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"street\": \"Second St\", \"number\": \"45\", \"city\": \"Otra\", \"province\": \"Prov\", \"postalCode\": \"2000\" }"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/addresses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "addresses"
+              ]
+            }
+          }
         },
         {
-          "name":"Actualizar dirección",
-          "request":{ "method":"PUT","header":[{ "key":"Content-Type","value":"application/json" },{ "key":"Authorization","value":"Bearer {{accessToken}}" }],"body":{"mode":"raw","raw":"{ \"extraInfo\": \"Frente al parque\" }"},"url":{"raw":"{{baseUrl}}/api/addresses/:id","host":["{{baseUrl}}"],"path":["api","addresses",":id"],"variable":[{"key":"id","value":"1"}]} },
-          "response":[ { "name":"Ejemplo actualizado","status":"200 OK","code":200,"header":[{"key":"Content-Type","value":"application/json"}],"body":"{ \"id\":1, \"street\": \"Main St\", \"number\": \"123\", \"city\": \"Ciudad\", \"province\": \"Provincia\", \"postalCode\": \"1000\", \"extraInfo\": \"Frente al parque\" }" } ]
+          "name": "Actualizar dirección",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"extraInfo\": \"Frente al parque\" }"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/addresses/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "addresses",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
         },
         {
-          "name":"Eliminar dirección",
-          "request":{ "method":"DELETE","header":[{ "key":"Authorization","value":"Bearer {{accessToken}}" }],"url":{"raw":"{{baseUrl}}/api/addresses/:id","host":["{{baseUrl}}"],"path":["api","addresses",":id"],"variable":[{"key":"id","value":"1"}]} },
-          "response":[ { "name":"Ejemplo eliminado","status":"200 OK","code":200,"header":[{"key":"Content-Type","value":"application/json"}],"body":"{ \"message\": \"Dirección eliminada correctamente\" }" } ]
+          "name": "Eliminar dirección",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/addresses/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "addresses",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
         }
       ]
     }
@@ -799,4 +1327,4 @@
       "description": "Token de acceso JWT"
     }
   ]
-} 
+}
