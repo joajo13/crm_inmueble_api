@@ -5,36 +5,43 @@ import { addressSchema } from './address.validation';
 export const propertySchema = z.object({
   title: z.string().min(3, { message: 'El título debe tener al menos 3 caracteres' }),
   description: z.string().optional().nullable(),
-  price: z.number().positive({ message: 'El precio debe ser un valor positivo' }),
+  price: z.coerce.number().positive({ message: 'El precio debe ser un valor positivo' }),
   currency: z.string().default('ARS'),
   
   // Datos de geolocalización (opcionales)
-  lat: z.number().optional().nullable(),
-  lng: z.number().optional().nullable(),
+  lat: z.coerce.number().optional().nullable(),
+  lng: z.coerce.number().optional().nullable(),
   
   // Características físicas (opcionales)
-  coveredAreaM2: z.number().optional().nullable(),
-  totalAreaM2: z.number().optional().nullable(),
-  bedrooms: z.number().int().optional().nullable(),
-  bathrooms: z.number().int().optional().nullable(),
-  floors: z.number().int().optional().nullable(),
-  yearBuilt: z.number().int().optional().nullable(),
-  garages: z.number().int().optional().nullable(),
+  coveredAreaM2: z.coerce.number().optional().nullable(),
+  totalAreaM2: z.coerce.number().optional().nullable(),
+  bedrooms: z.coerce.number().int().optional().nullable(),
+  bathrooms: z.coerce.number().int().optional().nullable(),
+  floors: z.coerce.number().int().optional().nullable(),
+  yearBuilt: z.coerce.number().int().optional().nullable(),
+  garages: z.coerce.number().int().optional().nullable(),
 
   // IDs para las relaciones (requeridos)
-  listingTypeId: z.number().int().positive({ message: 'El tipo de listado es requerido' }),
-  statusId: z.number().int().positive({ message: 'El estado de la propiedad es requerido' }),
-  propertyTypeId: z.number().int().positive({ message: 'El tipo de propiedad es requerido' }),
-  addressId: z.number().int().positive({ message: 'La dirección es requerida' }),
+  listingTypeId: z.coerce.number().int().positive({ message: 'El tipo de listado es requerido' }),
+  statusId: z.coerce.number().int().positive({ message: 'El estado de la propiedad es requerido' }),
+  propertyTypeId: z.coerce.number().int().positive({ message: 'El tipo de propiedad es requerido' }),
+  addressId: z.coerce.number().int().positive({ message: 'La dirección es requerida' }),
   
   // Relaciones opcionales
-  agentId: z.number().int().optional().nullable(),
-  buildingId: z.number().int().optional().nullable(),
+  agentId: z.coerce.number().int().optional().nullable(),
+  buildingId: z.coerce.number().int().optional().nullable(),
 });
 
 // Esquema para crear propiedades (usa addressSchema en vez de addressId)
 export const createPropertySchema = propertySchema.omit({ addressId: true }).extend({
-  address: addressSchema
+  address: z.string().transform((str) => {
+    try {
+      const parsedAddress = JSON.parse(str);
+      return addressSchema.parse(parsedAddress);
+    } catch (error) {
+      throw new Error('El formato de la dirección no es válido');
+    }
+  }),
 });
 
 // Esquema para actualizar propiedades (todos los campos son opcionales)

@@ -40,7 +40,8 @@ const PropertyService = {
         address: true,
         propertyType: true,
         listingType: true,
-        status: true
+        status: true,
+        images: true
       }
     });
   },
@@ -54,55 +55,91 @@ const PropertyService = {
         propertyType: true,
         listingType: true,
         status: true,
-        agent: true
+        agent: true,
+        images: true
       }
     });
   },
   
   create: async (data: any) => {
-    // Extraer datos de dirección
-    const { address, ...propertyData } = data;
-    // Buscar dirección existente
-    let addressRecord = await addressService.findAddressByFields(address);
-    if (!addressRecord) {
-      addressRecord = await addressService.createAddress(address);
-    }
-    // Crear la propiedad con el addressId encontrado o creado
-    const createData: Prisma.PropertyCreateInput = {
-      title: propertyData.title,
-      description: propertyData.description,
-      price: new Prisma.Decimal(propertyData.price.toString()),
-      currency: propertyData.currency || 'ARS',
-      listingType: { connect: { id: propertyData.listingTypeId } },
-      status: { connect: { id: propertyData.statusId } },
-      propertyType: { connect: { id: propertyData.propertyTypeId } },
-      address: { connect: { id: addressRecord.id } },
-      coveredAreaM2: propertyData.coveredAreaM2,
-      totalAreaM2: propertyData.totalAreaM2,
-      bedrooms: propertyData.bedrooms,
-      bathrooms: propertyData.bathrooms,
-      floors: propertyData.floors,
-      yearBuilt: propertyData.yearBuilt,
-      garages: propertyData.garages,
-      lat: propertyData.lat ? new Prisma.Decimal(propertyData.lat.toString()) : null,
-      lng: propertyData.lng ? new Prisma.Decimal(propertyData.lng.toString()) : null,
-    };
-    if (propertyData.buildingId) {
-      createData.building = { connect: { id: propertyData.buildingId } };
-    }
-    if (propertyData.agentId) {
-      createData.agent = { connect: { id: propertyData.agentId } };
-    }
-    return await prisma.property.create({
-      data: createData,
-      include: {
-        building: true,
-        address: true,
-        propertyType: true,
-        listingType: true,
-        status: true,
-        agent: true
+    const { address, images, ...propertyData } = data; // Extraer images también
+
+    return prisma.$transaction(async (tx) => {
+      // 1. Buscar o crear dirección
+      let addressRecord = await addressService.findAddressByFields(address, tx as PrismaClient);
+      if (!addressRecord) {
+        addressRecord = await addressService.createAddress(address, tx as PrismaClient);
       }
+
+      // 2. Preparar datos de la propiedad
+      const createPropertyData: Prisma.PropertyCreateInput = {
+        title: propertyData.title,
+        description: propertyData.description,
+        price: new Prisma.Decimal(propertyData.price.toString()),
+        currency: propertyData.currency || 'ARS',
+        listingType: { connect: { id: propertyData.listingTypeId } },
+        status: { connect: { id: propertyData.statusId } },
+        propertyType: { connect: { id: propertyData.propertyTypeId } },
+        address: { connect: { id: addressRecord.id } },
+        coveredAreaM2: propertyData.coveredAreaM2,
+        totalAreaM2: propertyData.totalAreaM2,
+        bedrooms: propertyData.bedrooms,
+        bathrooms: propertyData.bathrooms,
+        floors: propertyData.floors,
+        yearBuilt: propertyData.yearBuilt,
+        garages: propertyData.garages,
+        lat: propertyData.lat ? new Prisma.Decimal(propertyData.lat.toString()) : null,
+        lng: propertyData.lng ? new Prisma.Decimal(propertyData.lng.toString()) : null,
+      };
+      if (propertyData.buildingId) {
+        createPropertyData.building = { connect: { id: propertyData.buildingId } };
+      }
+      if (propertyData.agentId) {
+        createPropertyData.agent = { connect: { id: propertyData.agentId } };
+      }
+
+      // 3. Crear la propiedad
+      const newProperty = await tx.property.create({
+        data: createPropertyData,
+        include: {
+            // Incluimos todo para la respuesta, especialmente las imágenes vacías inicialmente
+            building: true,
+            address: true,
+            propertyType: true,
+            listingType: true,
+            status: true,
+            agent: true,
+            images: true 
+        }
+      });
+
+      // 4. Si hay imágenes, crearlas y asociarlas
+      if (images && images.length > 0) {
+        const imageCreations = images.map((img: { filePath: string; mimeType: string }) => {
+          return tx.image.create({
+            data: {
+              filePath: img.filePath,
+              mimeType: img.mimeType,
+              Property: { connect: { id: newProperty.id } }
+            }
+          });
+        });
+        await Promise.all(imageCreations);
+      }
+      
+      // 5. Volver a cargar la propiedad con las imágenes para devolverla completa
+      return tx.property.findUnique({
+        where: { id: newProperty.id },
+        include: {
+            building: true,
+            address: true,
+            propertyType: true,
+            listingType: true,
+            status: true,
+            agent: true,
+            images: true // Ahora debería incluir las imágenes creadas
+        }
+      });
     });
   },
   
@@ -192,6 +229,17 @@ const PropertyService = {
         listingType: true,
         status: true,
         agent: true
+      }
+    });
+  },
+
+  // Nuevo método para agregar una imagen a una propiedad
+  addImageToProperty: async (propertyId: number, imageData: { filePath: string; mimeType: string }) => {
+    return await prisma.image.create({
+      data: {
+        filePath: imageData.filePath,
+        mimeType: imageData.mimeType,
+        Property: { connect: { id: propertyId } }
       }
     });
   }

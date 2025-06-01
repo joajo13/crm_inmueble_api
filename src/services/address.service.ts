@@ -1,14 +1,18 @@
-import { PrismaClient, Address } from '@prisma/client';
+import { PrismaClient, Address, Prisma } from '@prisma/client';
 import { createAddressSchema, updateAddressSchema } from '@/validations/address.validation';
 import { z } from 'zod';
 
-const prisma = new PrismaClient();
+const globalPrisma = new PrismaClient();
 
 export const addressService = {
   /**
    * Crear una nueva dirección
    */
-  async createAddress(data: z.infer<typeof createAddressSchema>): Promise<Address> {
+  async createAddress(
+    data: z.infer<typeof createAddressSchema>,
+    prismaClient?: Prisma.TransactionClient
+  ): Promise<Address> {
+    const prisma = prismaClient || globalPrisma;
     return prisma.address.create({
       data
     });
@@ -21,14 +25,14 @@ export const addressService = {
     const skip = (page - 1) * limit;
     
     const [addresses, total] = await Promise.all([
-      prisma.address.findMany({
+      globalPrisma.address.findMany({
         skip,
         take: limit,
         orderBy: {
           id: 'asc'
         }
       }),
-      prisma.address.count()
+      globalPrisma.address.count()
     ]);
     
     return { addresses, total };
@@ -38,7 +42,7 @@ export const addressService = {
    * Obtener una dirección por ID
    */
   async getAddressById(id: number): Promise<Address | null> {
-    return prisma.address.findUnique({
+    return globalPrisma.address.findUnique({
       where: { id }
     });
   },
@@ -50,7 +54,7 @@ export const addressService = {
     id: number, 
     data: z.infer<typeof updateAddressSchema>
   ): Promise<Address> {
-    return prisma.address.update({
+    return globalPrisma.address.update({
       where: { id },
       data
     });
@@ -60,7 +64,7 @@ export const addressService = {
    * Eliminar una dirección
    */
   async deleteAddress(id: number): Promise<Address> {
-    return prisma.address.delete({
+    return globalPrisma.address.delete({
       where: { id }
     });
   },
@@ -85,7 +89,7 @@ export const addressService = {
       };
     }
     
-    return prisma.address.findMany({
+    return globalPrisma.address.findMany({
       where: whereClause,
       orderBy: {
         id: 'asc'
@@ -104,7 +108,10 @@ export const addressService = {
     province: string;
     postalCode?: string | null;
     extraInfo?: string | null;
-  }): Promise<Address | null> {
+  },
+  prismaClient?: Prisma.TransactionClient
+  ): Promise<Address | null> {
+    const prisma = prismaClient || globalPrisma;
     return prisma.address.findFirst({
       where: {
         street: fields.street,
