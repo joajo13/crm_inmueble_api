@@ -64,14 +64,13 @@ export const listingTypeController = {
   async updateListingType(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = listingTypeIdParamSchema.parse(req.params);
-      const validatedData = updateListingTypeSchema.parse(req.body);
       
       const existingListingType = await listingTypeService.getListingTypeById(Number(id));
       if (!existingListingType) {
         throw new AppError('NOT_FOUND', ['Tipo de listado no encontrado']);
       }
       
-      const updatedListingType = await listingTypeService.updateListingType(Number(id), validatedData);
+      const updatedListingType = await listingTypeService.updateListingType(Number(id), req.body);
       
       res.status(200).json({
         success: true,
