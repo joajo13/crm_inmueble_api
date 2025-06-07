@@ -6,7 +6,6 @@ import buildingRoutes from './building.routes';
 import listingTypeRoutes from './listingType.routes';
 import propertyStatusRoutes from './propertyStatus.routes';
 import propertyTypeRoutes from './propertyType.routes';
-import addressRoutes from './address.routes';
 
 const router = Router();
 
@@ -18,6 +17,5 @@ router.use('/buildings', buildingRoutes);
 router.use('/listing-types', listingTypeRoutes);
 router.use('/property-statuses', propertyStatusRoutes);
 router.use('/property-types', propertyTypeRoutes);
-router.use('/addresses', addressRoutes);
 
 export default router; 
