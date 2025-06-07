@@ -6,4 +6,3 @@ export * from './building.service';
 export * from './listingType.service';
 export * from './propertyStatus.service';
 export * from './propertyType.service';
-export * from './address.service'; 

@@ -43,29 +43,6 @@ async function main() {
     data: { code: 'HOUSE', description: 'Casa' }
   });
 
-  // Address para propiedad
-  const propertyAddress = await prisma.address.create({
-    data: {
-      street: 'Calle Falsa',
-      number: '123',
-      city: 'Ciudad',
-      province: 'Provincia',
-      postalCode: '12345',
-      extraInfo: 'Apto 1'
-    }
-  });
-
-  // Address para edificio
-  const buildingAddress = await prisma.address.create({
-    data: {
-      street: 'Avenida Principal',
-      number: '500',
-      city: 'Ciudad',
-      province: 'Provincia',
-      postalCode: '12345',
-      extraInfo: 'Edificio Residencial'
-    }
-  });
 
   // Usuario
   const user = await prisma.user.create({
@@ -88,11 +65,14 @@ async function main() {
       listingTypeId: saleType.id,
       statusId: availableStatus.id,
       propertyTypeId: houseType.id,
+      city: 'Buenos Aires',
+      province: 'Buenos Aires',
+      street: 'Calle Falsa',
+      number: '123',
+      postalCode: '12345',
       price: 200000,
       currency: 'USD',
-      addressId: propertyAddress.id,
       agentId: user.id,
-      coveredAreaM2: 120,
       totalAreaM2: 200,
       bedrooms: 3,
       bathrooms: 2,
@@ -106,7 +86,6 @@ async function main() {
   const building = await prisma.building.create({
     data: {
       name: 'Edificio Residencial Torres',
-      addressId: buildingAddress.id,
       floors: 5,
       totalUnits: 10,
       yearBuilt: 2015,
@@ -123,11 +102,14 @@ async function main() {
       listingTypeId: rentType.id,
       statusId: availableStatus.id,
       propertyTypeId: apartmentType.id,
+      city: 'Buenos Aires',
+      province: 'Buenos Aires',
+      street: 'Calle Falsa',
+      number: '123',
+      postalCode: '12345',
       price: 1200,
       currency: 'USD',
-      addressId: buildingAddress.id, // Usa la misma dirección del edificio
       agentId: user.id,
-      coveredAreaM2: 75,
       totalAreaM2: 75,
       bedrooms: 2,
       bathrooms: 1,

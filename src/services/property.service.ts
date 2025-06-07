@@ -1,10 +1,9 @@
 import { PrismaClient, Prisma } from '@prisma/client';
-import { addressService } from './address.service';
 
 const prisma = new PrismaClient();
 
 // Interfaz para datos de propiedad según el modelo de Prisma
-export interface PropertyData {
+export interface Property {
   title: string;
   description?: string | null;
   price: number;
@@ -14,16 +13,19 @@ export interface PropertyData {
   listingTypeId: number;
   statusId: number;
   propertyTypeId: number;
-  addressId: number;
   buildingId?: number | null;
   agentId?: number | null;
+  city?: string | null;
+  province?: string | null;
+  postalCode?: string | null;
+  street?: string | null;
+  number?: string | null;
   
   // Datos de geolocalización
   lat?: number | null;
   lng?: number | null;
   
   // Características físicas
-  coveredAreaM2?: number | null;
   totalAreaM2?: number | null;
   bedrooms?: number | null;
   bathrooms?: number | null;
@@ -37,11 +39,13 @@ const PropertyService = {
     return await prisma.property.findMany({
       include: {
         building: true,
-        address: true,
         propertyType: true,
         listingType: true,
         status: true,
         images: true
+      },
+      where: {
+        deletedAt: null
       }
     });
   },
@@ -51,7 +55,6 @@ const PropertyService = {
       where: { id },
       include: {
         building: true,
-        address: true,
         propertyType: true,
         listingType: true,
         status: true,
@@ -62,16 +65,9 @@ const PropertyService = {
   },
   
   create: async (data: any) => {
-    const { address, images, ...propertyData } = data; // Extraer images también
+    const { images, ...propertyData } = data;
 
     return prisma.$transaction(async (tx) => {
-      // 1. Buscar o crear dirección
-      let addressRecord = await addressService.findAddressByFields(address, tx as PrismaClient);
-      if (!addressRecord) {
-        addressRecord = await addressService.createAddress(address, tx as PrismaClient);
-      }
-
-      // 2. Preparar datos de la propiedad
       const createPropertyData: Prisma.PropertyCreateInput = {
         title: propertyData.title,
         description: propertyData.description,
@@ -80,31 +76,28 @@ const PropertyService = {
         listingType: { connect: { id: propertyData.listingTypeId } },
         status: { connect: { id: propertyData.statusId } },
         propertyType: { connect: { id: propertyData.propertyTypeId } },
-        address: { connect: { id: addressRecord.id } },
-        coveredAreaM2: propertyData.coveredAreaM2,
         totalAreaM2: propertyData.totalAreaM2,
         bedrooms: propertyData.bedrooms,
         bathrooms: propertyData.bathrooms,
+        city: propertyData.city,
+        province: propertyData.province,
+        postalCode: propertyData.postalCode,
+        street: propertyData.street,
+        number: propertyData.number,
         floors: propertyData.floors,
         yearBuilt: propertyData.yearBuilt,
         garages: propertyData.garages,
         lat: propertyData.lat ? new Prisma.Decimal(propertyData.lat.toString()) : null,
         lng: propertyData.lng ? new Prisma.Decimal(propertyData.lng.toString()) : null,
       };
-      if (propertyData.buildingId) {
-        createPropertyData.building = { connect: { id: propertyData.buildingId } };
-      }
-      if (propertyData.agentId) {
-        createPropertyData.agent = { connect: { id: propertyData.agentId } };
-      }
 
-      // 3. Crear la propiedad
+      if (propertyData.buildingId) createPropertyData.building = { connect: { id: propertyData.buildingId } };
+      if (propertyData.agentId) createPropertyData.agent = { connect: { id: propertyData.agentId } };
+
       const newProperty = await tx.property.create({
         data: createPropertyData,
         include: {
-            // Incluimos todo para la respuesta, especialmente las imágenes vacías inicialmente
             building: true,
-            address: true,
             propertyType: true,
             listingType: true,
             status: true,
@@ -113,7 +106,7 @@ const PropertyService = {
         }
       });
 
-      // 4. Si hay imágenes, crearlas y asociarlas
+      // Si hay imágenes, crearlas y asociarlas
       if (images && images.length > 0) {
         const imageCreations = images.map((img: { filePath: string; mimeType: string }) => {
           return tx.image.create({
@@ -127,39 +120,33 @@ const PropertyService = {
         await Promise.all(imageCreations);
       }
       
-      // 5. Volver a cargar la propiedad con las imágenes para devolverla completa
+      // Devolver la propiedad con las imágenes para devolverla completa
       return tx.property.findUnique({
         where: { id: newProperty.id },
         include: {
             building: true,
-            address: true,
             propertyType: true,
             listingType: true,
             status: true,
             agent: true,
-            images: true // Ahora debería incluir las imágenes creadas
+            images: true
         }
       });
     });
   },
   
-  update: async (id: number, data: Partial<PropertyData>) => {
+  update: async (id: number, data: Partial<Property>) => {
     const updateData: Prisma.PropertyUpdateInput = {};
     
-    // Campos básicos
     if (data.title !== undefined) updateData.title = data.title;
     if (data.description !== undefined) updateData.description = data.description;
     if (data.price !== undefined) updateData.price = new Prisma.Decimal(data.price.toString());
     if (data.currency !== undefined) updateData.currency = data.currency;
-    
-    // Relaciones
+
     if (data.listingTypeId !== undefined) updateData.listingType = { connect: { id: data.listingTypeId } };
     if (data.statusId !== undefined) updateData.status = { connect: { id: data.statusId } };
     if (data.propertyTypeId !== undefined) updateData.propertyType = { connect: { id: data.propertyTypeId } };
-    if (data.addressId !== undefined) updateData.address = { connect: { id: data.addressId } };
     
-    // Características físicas
-    if (data.coveredAreaM2 !== undefined) updateData.coveredAreaM2 = data.coveredAreaM2;
     if (data.totalAreaM2 !== undefined) updateData.totalAreaM2 = data.totalAreaM2;
     if (data.bedrooms !== undefined) updateData.bedrooms = data.bedrooms;
     if (data.bathrooms !== undefined) updateData.bathrooms = data.bathrooms;
@@ -175,6 +162,12 @@ const PropertyService = {
       updateData.lng = data.lng ? new Prisma.Decimal(data.lng.toString()) : null;
     }
     
+    if (data.city !== undefined) updateData.city = data.city;
+    if (data.province !== undefined) updateData.province = data.province;
+    if (data.postalCode !== undefined) updateData.postalCode = data.postalCode;
+    if (data.street !== undefined) updateData.street = data.street;
+    if (data.number !== undefined) updateData.number = data.number;
+
     // Relaciones opcionales
     if (data.buildingId !== undefined) {
       if (data.buildingId === null) {
@@ -191,13 +184,14 @@ const PropertyService = {
         updateData.agent = { connect: { id: data.agentId } };
       }
     }
+
+    console.log('updateData', updateData);
     
     return await prisma.property.update({
       where: { id },
       data: updateData,
       include: {
         building: true,
-        address: true,
         propertyType: true,
         listingType: true,
         status: true,
@@ -207,14 +201,19 @@ const PropertyService = {
   },
   
   delete: async (id: number) => {
-    // Primero eliminamos las relaciones en UserOnProperty
-    await prisma.userOnProperty.deleteMany({
-      where: { propertyId: id }
-    });
+    // // Primero eliminamos las relaciones en UserOnProperty
+    // await prisma.userOnProperty.deleteMany({
+    //   where: { propertyId: id }
+    // });
     
-    // Luego eliminamos la propiedad
-    return await prisma.property.delete({
-      where: { id }
+    // // Luego eliminamos la propiedad
+    // return await prisma.property.delete({
+    //   where: { id }
+    // });
+
+    return await prisma.property.update({
+      where: { id },
+      data: { deletedAt: new Date() }
     });
   },
   
@@ -224,7 +223,6 @@ const PropertyService = {
       where: { buildingId },
       include: {
         building: true,
-        address: true,
         propertyType: true,
         listingType: true,
         status: true,
@@ -241,6 +239,18 @@ const PropertyService = {
         mimeType: imageData.mimeType,
         Property: { connect: { id: propertyId } }
       }
+    });
+  },
+
+  deleteImage: async (imageId: number) => {
+    return await prisma.image.delete({
+      where: { id: imageId }
+    });
+  },
+
+  getImagesByPropertyId: async (propertyId: number) => {
+    return await prisma.image.findMany({
+      where: { propertyId }
     });
   }
 };

@@ -7,7 +7,6 @@ import buildingRouter from '@/routes/building.routes';
 import listingTypeRouter from '@/routes/listingType.routes';
 import propertyStatusRouter from '@/routes/propertyStatus.routes';
 import propertyTypeRouter from '@/routes/propertyType.routes';
-import addressRouter from '@/routes/address.routes';
 import { errorMiddleware } from '@/errors';
 import morgan from 'morgan';
 import path from 'path'; // Necesario para construir rutas de archivos
@@ -16,7 +15,7 @@ const app = express();
 
 // Middlewares básicos
 app.use(cors());
-// app.use(express.json({ limit: '50mb' }));
+app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(morgan('dev')); 
 
@@ -39,7 +38,6 @@ app.use('/api/buildings', buildingRouter);
 app.use('/api/listing-types', listingTypeRouter);
 app.use('/api/property-status', propertyStatusRouter);
 app.use('/api/property-types', propertyTypeRouter);
-app.use('/api/addresses', addressRouter);
 
 // Manejo de errores
 app.use(errorMiddleware);

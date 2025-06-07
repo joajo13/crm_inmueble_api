@@ -8,7 +8,11 @@ export class BuildingService {
    */
   async createBuilding(data: {
     name: string;
-    addressId: number;
+    city: string;
+    province: string;
+    postalCode: string;
+    street: string;
+    number: string;
     yearBuilt?: number;
     floors?: number;
     totalUnits?: number;
@@ -30,6 +34,7 @@ export class BuildingService {
     return prisma.building.findMany({
       include: {
         properties: true,
+        images: true,
       },
     });
   }

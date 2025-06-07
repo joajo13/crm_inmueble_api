@@ -3,16 +3,16 @@ import path from 'path';
 import fs from 'fs';
 import { AppError } from '@/errors';
 
-const UPLOAD_DIR = path.join(__dirname, '../../static/images/properties');
+const UPLOAD_TMP_DIR = path.join(__dirname, '../../tmp');
 
 // Asegurarse de que el directorio de subida exista
-if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+if (!fs.existsSync(UPLOAD_TMP_DIR)) {
+  fs.mkdirSync(UPLOAD_TMP_DIR, { recursive: true });
 }
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, UPLOAD_DIR);
+    cb(null, UPLOAD_TMP_DIR);
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
