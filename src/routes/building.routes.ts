@@ -19,7 +19,7 @@ router.post(
   validateRequest(buildingCreateSchema),
   buildingController.createBuilding
 );
-router.get("/", authMiddleware, buildingController.getAllBuildings);
+router.get("/", buildingController.getAllBuildings);
 router.get(
   "/:id",
   authMiddleware,

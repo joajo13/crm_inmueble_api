@@ -7,7 +7,7 @@ import { propertyTypeIdParamSchema, createPropertyTypeSchema, updatePropertyType
 const router = Router();
 
 // Rutas públicas
-router.get('/', authMiddleware, propertyTypeController.getAllPropertyTypes);
+router.get('/', propertyTypeController.getAllPropertyTypes);
 router.get('/:id', [
   authMiddleware,
   validateRequest(propertyTypeIdParamSchema, 'params')

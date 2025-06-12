@@ -12,10 +12,9 @@ import upload from "@/middlewares/upload.middleware";
 
 const router = Router();
 
-router.get("/", authMiddleware, PropertyController.getAllProperties);
+router.get("/", PropertyController.getAllProperties);
 router.get(
   "/:id",
-  authMiddleware,
   validateRequest(propertyIdParamSchema, "params"),
   PropertyController.getPropertyById
 );

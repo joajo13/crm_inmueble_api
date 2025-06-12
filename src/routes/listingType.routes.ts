@@ -7,7 +7,7 @@ import { listingTypeIdParamSchema, createListingTypeSchema, updateListingTypeSch
 const router = Router();
 
 // Rutas públicas
-router.get('/', authMiddleware, listingTypeController.getAllListingTypes);
+router.get('/', listingTypeController.getAllListingTypes);
 router.get('/:id', [
   authMiddleware,
   validateRequest(listingTypeIdParamSchema, 'params')

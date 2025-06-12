@@ -7,7 +7,7 @@ import { propertyStatusIdParamSchema, createPropertyStatusSchema, updateProperty
 const router = Router();
 
 // Rutas públicas
-router.get('/', authMiddleware, propertyStatusController.getAllPropertyStatuses);
+router.get('/', propertyStatusController.getAllPropertyStatuses);
 router.get('/:id', [
   authMiddleware,
   validateRequest(propertyStatusIdParamSchema, 'params')
