@@ -19,8 +19,8 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(morgan('dev')); 
 
-// Servir archivos estáticos
-app.use('/static', express.static(path.join(__dirname, '../static')));
+// COMENTADO: Ya no servimos archivos estáticos localmente, ahora usamos S3/MinIO
+// app.use('/static', express.static(path.join(__dirname, '../static')));
 
 // Health check endpoint
 app.get('/health', (req, res) => {

@@ -2,6 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 import { Image } from "@prisma/client";
+import S3Service from "./s3.service";
+import { s3Config } from "@/config/s3.config";
 
 const prisma = new PrismaClient();
 
@@ -51,6 +53,7 @@ const ImageService = {
 
     return deletedImage;
   },
+
   preparePropertyImagePath: (
     propertyId: number,
     imageId: number,
@@ -91,56 +94,88 @@ const ImageService = {
 
   savePropertyImage: async (
     propertyId: number,
-    imageData: ImageData
+    file: Express.Multer.File
   ): Promise<Image> => {
-    // Primero creamos el registro en la base de datos con una ruta temporal
+    // Primero creamos el registro en la base de datos para obtener el ID
     const newImage = await prisma.image.create({
       data: {
-        filePath: imageData.filePath, // Esta será una ruta temporal
-        mimeType: imageData.mimeType,
+        filePath: '', // Se actualizará después
+        mimeType: file.mimetype,
         propertyId,
       },
     });
 
-    // Ahora que tenemos el ID, preparamos la ruta final
-    const { filePath: finalPath } = ImageService.preparePropertyImagePath(
-      propertyId,
-      newImage.id,
-      imageData.filePath
-    );
+    try {
+      // Leer el archivo temporal
+      const buffer = fs.readFileSync(file.path);
+      
+      // Subir a S3
+      const s3Url = await S3Service.uploadPropertyImage(
+        propertyId,
+        newImage.id,
+        buffer,
+        file.originalname,
+        file.mimetype
+      );
 
-    // Actualizamos el registro con la ruta final
-    return await prisma.image.update({
-      where: { id: newImage.id },
-      data: { filePath: finalPath },
-    });
+      // Actualizar el registro con la URL de S3
+      const updatedImage = await prisma.image.update({
+        where: { id: newImage.id },
+        data: { filePath: s3Url },
+      });
+
+      // Limpiar el archivo temporal
+      fs.unlinkSync(file.path);
+
+      return updatedImage;
+    } catch (error) {
+      // Si falla, eliminar el registro de la base de datos
+      await prisma.image.delete({ where: { id: newImage.id } });
+      throw error;
+    }
   },
 
   saveBuildingImage: async (
     buildingId: number,
-    imageData: ImageData
+    file: Express.Multer.File
   ): Promise<Image> => {
-    // Primero creamos el registro en la base de datos con una ruta temporal
+    // Primero creamos el registro en la base de datos para obtener el ID
     const newImage = await prisma.image.create({
       data: {
-        filePath: imageData.filePath, // Esta será una ruta temporal
-        mimeType: imageData.mimeType,
+        filePath: '', // Se actualizará después
+        mimeType: file.mimetype,
         buildingId: buildingId,
       },
     });
 
-    // Ahora que tenemos el ID, preparamos la ruta final
-    const { filePath: finalPath } = ImageService.prepareBuildingImagePath(
-      buildingId,
-      newImage.id,
-      imageData.filePath
-    );
+    try {
+      // Leer el archivo temporal
+      const buffer = fs.readFileSync(file.path);
+      
+      // Subir a S3
+      const s3Url = await S3Service.uploadBuildingImage(
+        buildingId,
+        newImage.id,
+        buffer,
+        file.originalname,
+        file.mimetype
+      );
 
-    // Actualizamos el registro con la ruta final
-    return await prisma.image.update({
-      where: { id: newImage.id },
-      data: { filePath: finalPath },
-    });
+      // Actualizar el registro con la URL de S3
+      const updatedImage = await prisma.image.update({
+        where: { id: newImage.id },
+        data: { filePath: s3Url },
+      });
+
+      // Limpiar el archivo temporal
+      fs.unlinkSync(file.path);
+
+      return updatedImage;
+    } catch (error) {
+      // Si falla, eliminar el registro de la base de datos
+      await prisma.image.delete({ where: { id: newImage.id } });
+      throw error;
+    }
   },
 
   prepareBuildingImagePath: (
@@ -165,15 +200,6 @@ const ImageService = {
     return { dirPath, filePath };
   },
 
-  // uploadBuildingImage: async (imageData: ImageData, buildingId: number) => {
-  //   const { filePath, mimeType } = imageData;
-  //   const newImage = await prisma.image.create({
-  //     data: { filePath: filePath, mimeType: mimeType, buildingId: buildingId },
-  //   });
-
-  //   return newImage;
-  // },
-
   getImagesByBuildingId: async (buildingId: number) => {
     const images = await prisma.image.findMany({
       where: { buildingId: buildingId },
@@ -183,6 +209,56 @@ const ImageService = {
   },
 
   deleteBuildingImage: async (imageId: number) => {
+    const image = await prisma.image.findUnique({
+      where: { id: imageId }
+    });
+
+    if (!image) {
+      throw new Error('Imagen no encontrada');
+    }
+
+    // Si la imagen está en S3 (contiene la URL del endpoint), eliminarla de S3
+    if (image.filePath.startsWith(s3Config.endpoint)) {
+      await S3Service.deleteImage(image.filePath);
+    } else {
+      // Si es una imagen local (legacy), eliminar del filesystem
+      try {
+        fs.unlinkSync(image.filePath);
+      } catch (error) {
+        console.warn(`No se pudo eliminar el archivo local: ${image.filePath}`);
+      }
+    }
+
+    // Eliminar de la base de datos
+    const deletedImage = await prisma.image.delete({
+      where: { id: imageId },
+    });
+
+    return deletedImage;
+  },
+
+  deletePropertyImage: async (imageId: number) => {
+    const image = await prisma.image.findUnique({
+      where: { id: imageId }
+    });
+
+    if (!image) {
+      throw new Error('Imagen no encontrada');
+    }
+
+    // Si la imagen está en S3 (contiene la URL del endpoint), eliminarla de S3
+    if (image.filePath.startsWith(s3Config.endpoint)) {
+      await S3Service.deleteImage(image.filePath);
+    } else {
+      // Si es una imagen local (legacy), eliminar del filesystem
+      try {
+        fs.unlinkSync(image.filePath);
+      } catch (error) {
+        console.warn(`No se pudo eliminar el archivo local: ${image.filePath}`);
+      }
+    }
+
+    // Eliminar de la base de datos
     const deletedImage = await prisma.image.delete({
       where: { id: imageId },
     });
@@ -192,16 +268,3 @@ const ImageService = {
 };
 
 export default ImageService;
-
-// if (images && images.length > 0) {
-//     const imageCreations = images.map((img: { filePath: string; mimeType: string }) => {
-//       return tx.image.create({
-//         data: {
-//           filePath: img.filePath,
-//           mimeType: img.mimeType,
-//           Property: { connect: { id: newProperty.id } }
-//         }
-//       });
-//     });
-//     await Promise.all(imageCreations);
-//   }

@@ -10,18 +10,9 @@ export const buildingController = {
   createBuilding: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
-
       const files = req.files as Express.Multer.File[];
-      let imagesData: { filePath: string; mimeType: string }[] = [];
 
       console.log("files", files);
-
-      if (files && files.length > 0) {
-        imagesData = files.map((file) => ({
-          filePath: `tmp/${file.filename}`,
-          mimeType: file.mimetype,
-        }));
-      }
 
       const buildingData = {
         ...data,
@@ -34,16 +25,12 @@ export const buildingController = {
 
       const newBuilding = await buildingService.createBuilding(buildingData);
 
-      for (const image of imagesData) {
-        const savedImage = await ImageService.saveBuildingImage(
-          newBuilding.id,
-          {
-            filePath: image.filePath,
-            mimeType: image.mimeType,
-          }
+      // Procesar cada imagen subiendo directamente a S3
+      if (files && files.length > 0) {
+        const imagePromises = files.map(file => 
+          ImageService.saveBuildingImage(newBuilding.id, file)
         );
-
-        ImageService.moveImageToBuilding(image.filePath, savedImage.filePath);
+        await Promise.all(imagePromises);
       }
 
       res.status(201).json({ success: true, data: newBuilding });
@@ -154,17 +141,8 @@ export const buildingController = {
         throw new AppError("NOT_FOUND", ["Building not found"]);
       }
 
-      // Guardar la imagen en la base de datos y obtener su ID
-      const savedImage = await ImageService.saveBuildingImage(
-        Number(id),
-        {
-          filePath: req.file.path,
-          mimeType: req.file.mimetype
-        }
-      );
-
-      // Mover el archivo a su ubicación final
-      ImageService.moveImageToBuilding(req.file.path, savedImage.filePath);
+      // Subir directamente a S3
+      const savedImage = await ImageService.saveBuildingImage(Number(id), req.file);
 
       res.json({ success: true, data: savedImage });
     } catch (error) {
@@ -180,15 +158,8 @@ export const buildingController = {
     try {
       const { imageId } = req.params;
 
-      const image = await ImageService.getById(Number(imageId));
-
-      if (!image) {
-        throw new AppError("NOT_FOUND", ["Imagen no encontrada"]);
-      }
-
-      fs.unlinkSync(image.filePath);
-
       await ImageService.deleteBuildingImage(Number(imageId));
+      
       res.json({ success: true, message: "Image deleted successfully" });
     } catch (error) {
       next(error);

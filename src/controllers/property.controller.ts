@@ -9,18 +9,9 @@ const PropertyController = {
   createProperty: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
-
       const files = req.files as Express.Multer.File[];
-      let imagesData: { filePath: string; mimeType: string }[] = [];
 
       console.log("files", files);
-
-      if (files && files.length > 0) {
-        imagesData = files.map((file) => ({
-          filePath: `tmp/${file.filename}`,
-          mimeType: file.mimetype,
-        }));
-      }
 
       const propertyData = {
         ...data,
@@ -35,19 +26,14 @@ const PropertyController = {
       };
 
       const newProperty = await PropertyService.create(propertyData);
-
       const propertyId = newProperty!.id;
 
-      // Procesar cada imagen
-      for (const image of imagesData) {
-        // Guardar la imagen en la base de datos y obtener su ID
-        const savedImage = await ImageService.savePropertyImage(propertyId, {
-          filePath: image.filePath,
-          mimeType: image.mimeType,
-        });
-
-        // Mover el archivo a su ubicación final
-        ImageService.moveImageToProperty(image.filePath, savedImage.filePath);
+      // Procesar cada imagen subiendo directamente a S3
+      if (files && files.length > 0) {
+        const imagePromises = files.map(file => 
+          ImageService.savePropertyImage(propertyId, file)
+        );
+        await Promise.all(imagePromises);
       }
 
       res.status(201).json({ success: true, data: newProperty });
@@ -158,14 +144,8 @@ const PropertyController = {
         throw new AppError("NOT_FOUND", ["Propiedad no encontrada"]);
       }
 
-      // Guardar la imagen en la base de datos y obtener su ID
-      const savedImage = await ImageService.savePropertyImage(property.id, {
-        filePath: req.file.path,
-        mimeType: req.file.mimetype,
-      });
-
-      // Mover el archivo a su ubicación final
-      ImageService.moveImageToProperty(req.file.path, savedImage.filePath);
+      // Subir directamente a S3
+      const savedImage = await ImageService.savePropertyImage(property.id, req.file);
 
       res.status(201).json({ success: true, data: savedImage });
     } catch (error) {
@@ -181,15 +161,7 @@ const PropertyController = {
     try {
       const { imageId } = req.params;
 
-      const image = await ImageService.getById(Number(imageId));
-
-      if (!image) {
-        throw new AppError("NOT_FOUND", ["Imagen no encontrada"]);
-      }
-
-      fs.unlinkSync(image.filePath);
-
-      await ImageService.deleteImage(Number(imageId));
+      await ImageService.deletePropertyImage(Number(imageId));
 
       res.json({ success: true, message: "Imagen eliminada correctamente" });
     } catch (error) {
