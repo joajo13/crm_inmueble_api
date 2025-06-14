@@ -92,6 +92,9 @@ const ImageService = {
     fs.renameSync(sourceFilePath, destinationFilePath);
   },
 
+  /**
+   * Guarda una imagen de propiedad en S3 y en la base de datos
+   */
   savePropertyImage: async (
     propertyId: number,
     file: Express.Multer.File
@@ -100,7 +103,7 @@ const ImageService = {
     const newImage = await prisma.image.create({
       data: {
         filePath: '', // Se actualizará después
-        mimeType: file.mimetype,
+        mimeType: file.mimetype.startsWith('image/') ? 'image/webp' : file.mimetype, // Se convierte a WebP
         propertyId,
       },
     });
@@ -109,7 +112,7 @@ const ImageService = {
       // Leer el archivo temporal
       const buffer = fs.readFileSync(file.path);
       
-      // Subir a S3
+      // Subir a S3 (se convierte automáticamente a WebP)
       const s3Url = await S3Service.uploadPropertyImage(
         propertyId,
         newImage.id,
@@ -135,6 +138,9 @@ const ImageService = {
     }
   },
 
+  /**
+   * Guarda una imagen de edificio en S3 y en la base de datos
+   */
   saveBuildingImage: async (
     buildingId: number,
     file: Express.Multer.File
@@ -143,7 +149,7 @@ const ImageService = {
     const newImage = await prisma.image.create({
       data: {
         filePath: '', // Se actualizará después
-        mimeType: file.mimetype,
+        mimeType: file.mimetype.startsWith('image/') ? 'image/webp' : file.mimetype, // Se convierte a WebP
         buildingId: buildingId,
       },
     });
@@ -152,7 +158,7 @@ const ImageService = {
       // Leer el archivo temporal
       const buffer = fs.readFileSync(file.path);
       
-      // Subir a S3
+      // Subir a S3 (se convierte automáticamente a WebP)
       const s3Url = await S3Service.uploadBuildingImage(
         buildingId,
         newImage.id,
@@ -165,6 +171,112 @@ const ImageService = {
       const updatedImage = await prisma.image.update({
         where: { id: newImage.id },
         data: { filePath: s3Url },
+      });
+
+      // Limpiar el archivo temporal
+      fs.unlinkSync(file.path);
+
+      return updatedImage;
+    } catch (error) {
+      // Si falla, eliminar el registro de la base de datos
+      await prisma.image.delete({ where: { id: newImage.id } });
+      throw error;
+    }
+  },
+
+  /**
+   * Guarda una imagen de propiedad con múltiples tamaños (original, medium, thumbnail)
+   * OPCIONAL: Método avanzado para generar thumbnails automáticamente
+   */
+  savePropertyImageWithThumbnails: async (
+    propertyId: number,
+    file: Express.Multer.File
+  ): Promise<Image> => {
+    // Primero creamos el registro en la base de datos para obtener el ID
+    const newImage = await prisma.image.create({
+      data: {
+        filePath: '', // Se actualizará después
+        mimeType: 'image/webp',
+        propertyId,
+      },
+    });
+
+    try {
+      // Leer el archivo temporal
+      const buffer = fs.readFileSync(file.path);
+      
+      // Subir con múltiples tamaños
+      const urls = await S3Service.uploadImageWithThumbnails(
+        'property',
+        propertyId,
+        newImage.id,
+        buffer,
+        file.originalname,
+        file.mimetype
+      );
+
+      // Actualizar el registro con la URL original (puedes guardar también los thumbnails en campos adicionales)
+      const updatedImage = await prisma.image.update({
+        where: { id: newImage.id },
+        data: { 
+          filePath: urls.original,
+          // Si tu esquema tiene campos para thumbnails, puedes agregarlos aquí:
+          // thumbnailUrl: urls.thumbnail,
+          // mediumUrl: urls.medium
+        },
+      });
+
+      // Limpiar el archivo temporal
+      fs.unlinkSync(file.path);
+
+      return updatedImage;
+    } catch (error) {
+      // Si falla, eliminar el registro de la base de datos
+      await prisma.image.delete({ where: { id: newImage.id } });
+      throw error;
+    }
+  },
+
+  /**
+   * Guarda una imagen de edificio con múltiples tamaños (original, medium, thumbnail)
+   * OPCIONAL: Método avanzado para generar thumbnails automáticamente
+   */
+  saveBuildingImageWithThumbnails: async (
+    buildingId: number,
+    file: Express.Multer.File
+  ): Promise<Image> => {
+    // Primero creamos el registro en la base de datos para obtener el ID
+    const newImage = await prisma.image.create({
+      data: {
+        filePath: '', // Se actualizará después
+        mimeType: 'image/webp',
+        buildingId: buildingId,
+      },
+    });
+
+    try {
+      // Leer el archivo temporal
+      const buffer = fs.readFileSync(file.path);
+      
+      // Subir con múltiples tamaños
+      const urls = await S3Service.uploadImageWithThumbnails(
+        'building',
+        buildingId,
+        newImage.id,
+        buffer,
+        file.originalname,
+        file.mimetype
+      );
+
+      // Actualizar el registro con la URL original
+      const updatedImage = await prisma.image.update({
+        where: { id: newImage.id },
+        data: { 
+          filePath: urls.original,
+          // Si tu esquema tiene campos para thumbnails, puedes agregarlos aquí:
+          // thumbnailUrl: urls.thumbnail,
+          // mediumUrl: urls.medium
+        },
       });
 
       // Limpiar el archivo temporal
