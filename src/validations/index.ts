@@ -7,3 +7,4 @@ export * from './listingType.validation';
 export * from './propertyStatus.validation';
 export * from './propertyType.validation';
 export * from './address.validation';
+export * from './conversation.validation';

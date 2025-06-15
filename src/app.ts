@@ -7,6 +7,7 @@ import buildingRouter from '@/routes/building.routes';
 import listingTypeRouter from '@/routes/listingType.routes';
 import propertyStatusRouter from '@/routes/propertyStatus.routes';
 import propertyTypeRouter from '@/routes/propertyType.routes';
+import conversationRouter from '@/routes/conversation.routes';
 import { errorMiddleware } from '@/errors';
 import morgan from 'morgan';
 import path from 'path'; // Necesario para construir rutas de archivos
@@ -38,6 +39,7 @@ app.use('/api/buildings', buildingRouter);
 app.use('/api/listing-types', listingTypeRouter);
 app.use('/api/property-status', propertyStatusRouter);
 app.use('/api/property-types', propertyTypeRouter);
+app.use('/api/conversations', conversationRouter);
 
 // Manejo de errores
 app.use(errorMiddleware);
