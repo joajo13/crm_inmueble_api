@@ -1,24 +1,20 @@
-// ─────────────────────────────────────────────
-//  Global configuration
-// ─────────────────────────────────────────────
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
-/**
- * ─────────────────────────────────────────────
- * MASTER DATA  (lookup tables you can extend)
- * ─────────────────────────────────────────────
- */
+/// *
+///  * ─────────────────────────────────────────────
+///  * MASTER DATA  (lookup tables you can extend)
+///  * ─────────────────────────────────────────────
 model Role {
-  id          Int          @id @default(autoincrement())
-  code        String       @unique // e.g. ADMIN, AGENT, OWNER
   description String?
+  code        String       @unique
+  id          Int          @id @default(autoincrement())
   users       UserOnRole[]
 }
 
@@ -50,139 +46,226 @@ model PropertyType {
   properties  Property[]
 }
 
-/**
- * ─────────────────────────────────────────────
- * USERS & AUTHORIZATION
- * ─────────────────────────────────────────────
- */
+/// *
+///  * ─────────────────────────────────────────────
+///  * USERS & AUTHORIZATION
+///  * ─────────────────────────────────────────────
 model User {
-  id            Int              @id @default(autoincrement())
   email         String           @unique
   password      String
+  createdAt     DateTime         @default(now())
   fullName      String
   phone         String?
-  createdAt     DateTime         @default(now())
-  roles         UserOnRole[]
-  propertyLinks UserOnProperty[]
+  id            Int              @id @default(autoincrement())
   agentListings Property[]       @relation("AgentProperties")
+  propertyLinks UserOnProperty[]
+  roles         UserOnRole[]
+  conversations Conversation[]   @relation("AssignedConversations")
 }
 
 model UserOnRole {
   id     Int  @id @default(autoincrement())
-  user   User @relation(fields: [userId], references: [id])
   userId Int
-  role   Role @relation(fields: [roleId], references: [id])
   roleId Int
+  role   Role @relation(fields: [roleId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
 
   @@unique([userId, roleId])
 }
 
 model Image {
   id         Int       @id @default(autoincrement())
-  filePath   String
-  mimeType   String
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
-  building   Building? @relation(fields: [buildingId], references: [id])
-  buildingId Int?
-  Property   Property? @relation(fields: [propertyId], references: [id])
   propertyId Int?
+  filePath   String
+  mimeType   String
+  buildingId Int?
+  building   Building? @relation(fields: [buildingId], references: [id])
+  Property   Property? @relation(fields: [propertyId], references: [id])
 }
 
-/**
- * ─────────────────────────────────────────────
- * REAL-ESTATE INVENTORY
- * ─────────────────────────────────────────────
- */
+/// *
+///  * ─────────────────────────────────────────────
+///  * REAL-ESTATE INVENTORY
+///  * ─────────────────────────────────────────────
 model Property {
-  id             Int            @id @default(autoincrement())
+  id             Int              @id @default(autoincrement())
   title          String
   description    String?
-  listingType    ListingType    @relation(fields: [listingTypeId], references: [id])
   listingTypeId  Int
-  status         PropertyStatus @relation(fields: [statusId], references: [id])
-  statusId       Int            @default(1) // 1 = AVAILABLE
-  propertyType   PropertyType   @relation(fields: [propertyTypeId], references: [id])
+  statusId       Int              @default(1)
   propertyTypeId Int
-
-  price    Decimal @db.Decimal(14, 2)
-  currency String  @default("ARS")
-
-  lat Decimal? @db.Decimal(9, 6)
-  lng Decimal? @db.Decimal(9, 6)
-
-  // Generic physical data
-  totalAreaM2 Float?
-  bedrooms    Int?
-  bathrooms   Int?
-  floors      Int?
-  yearBuilt   Int?
-  garages     Int?
-
-  // Business relations
-  propertyActors UserOnProperty[]
-  agent          User?            @relation("AgentProperties", fields: [agentId], references: [id])
+  price          Decimal          @db.Decimal(14, 2)
+  currency       String           @default("ARS")
+  lat            Decimal?         @db.Decimal(9, 6)
+  lng            Decimal?         @db.Decimal(9, 6)
+  totalAreaM2    Float?
+  bedrooms       Int?
+  bathrooms      Int?
+  floors         Int?
+  yearBuilt      Int?
+  garages        Int?
   agentId        Int?
-
-  // Relación con edificios
-  building   Building? @relation(fields: [buildingId], references: [id])
-  buildingId Int?
-
-  // Metadata
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  images    Image[]
-
-  city       String?
-  province   String?
-  street     String?
-  number     String?
-  postalCode String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  buildingId     Int?
+  city           String?
+  number         String?
+  postalCode     String?
+  province       String?
+  street         String?
+  deletedAt      DateTime?
+  images         Image[]
+  agent          User?            @relation("AgentProperties", fields: [agentId], references: [id])
+  building       Building?        @relation(fields: [buildingId], references: [id])
+  listingType    ListingType      @relation(fields: [listingTypeId], references: [id])
+  propertyType   PropertyType     @relation(fields: [propertyTypeId], references: [id])
+  status         PropertyStatus   @relation(fields: [statusId], references: [id])
+  propertyActors UserOnProperty[]
+  conversations  Conversation[]   @relation("PropertyConversations")
 
   @@index([lat, lng])
 }
 
 model Building {
-  id         Int     @id @default(autoincrement())
+  id         Int        @id @default(autoincrement())
   name       String
-  city       String?
-  province   String?
-  postalCode String?
-  street     String?
-  number     String?
-
-  // Un edificio puede tener varias propiedades
-  properties Property[]
-
-  // Metadatos del edificio
-  yearBuilt  Int?
+  createdAt  DateTime   @default(now())
   floors     Int?
+  lat        Decimal?   @db.Decimal(9, 6)
+  lng        Decimal?   @db.Decimal(9, 6)
   totalUnits Int?
-
-  // Información de localización adicional
-  lat Decimal? @db.Decimal(9, 6)
-  lng Decimal? @db.Decimal(9, 6)
-
-  // Metadata
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  images    Image[]
+  updatedAt  DateTime   @updatedAt
+  yearBuilt  Int?
+  city       String?
+  number     String?
+  postalCode String?
+  province   String?
+  street     String?
+  images     Image[]
+  properties Property[]
 }
 
-/**
- * ─────────────────────────────────────────────
- * USER ↔ PROPERTY ROLES  (owner, tenant, …)
- * ─────────────────────────────────────────────
- */
+/// *
+///  * ─────────────────────────────────────────────
+///  * USER ↔ PROPERTY ROLES  (owner, tenant, …)
+///  * ─────────────────────────────────────────────
 model UserOnProperty {
   id          Int               @id @default(autoincrement())
-  user        User              @relation(fields: [userId], references: [id])
   userId      Int
-  property    Property          @relation(fields: [propertyId], references: [id])
   propertyId  Int
-  actorRole   PropertyActorRole @relation(fields: [actorRoleId], references: [id])
   actorRoleId Int
+  actorRole   PropertyActorRole @relation(fields: [actorRoleId], references: [id])
+  property    Property          @relation(fields: [propertyId], references: [id])
+  user        User              @relation(fields: [userId], references: [id])
 
   @@unique([userId, propertyId, actorRoleId])
+}
+
+/// *
+///  * ─────────────────────────────────────────────
+///  * WHATSAPP CHAT SYSTEM
+///  * ─────────────────────────────────────────────
+
+enum MessageType {
+  TEXT
+  BUTTON
+  DOCUMENT
+  IMAGE
+  AUDIO
+  LOCATION
+  CONTACT
+  TEMPLATE
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+enum ConversationStatus {
+  ACTIVE
+  PENDING
+  CLOSED
+  TRANSFERRED
+}
+
+enum ConversationPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+model Contact {
+  id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  wa_id         String         @unique @db.VarChar(191)
+  name          String?        @db.VarChar(191)
+  phone_number  String         @db.VarChar(191)
+  created_at    DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime       @default(now()) @db.Timestamptz(6)
+  conversations Conversation[]
+
+  @@map("contacts")
+}
+
+model Conversation {
+  id                String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  whatsapp_id       String               @unique @db.VarChar(191)
+  contact_id        String               @db.Uuid
+  status            ConversationStatus   @default(ACTIVE)
+  is_bot_active     Boolean              @default(true)
+  assigned_agent_id Int?
+  priority          ConversationPriority @default(NORMAL)
+  tags              String[]             @default([])
+  created_at        DateTime             @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime             @default(now()) @db.Timestamptz(6)
+  last_message_at   DateTime             @default(now()) @db.Timestamptz(6)
+  closed_at         DateTime?            @db.Timestamptz(6)
+  property_id       Int?
+  inquiry_type      String?              @db.VarChar(191)
+  preferred_visit_date DateTime?
+  budget_range      String?              @db.VarChar(191)
+  
+  // Relations
+  contact           Contact              @relation(fields: [contact_id], references: [id], onDelete: Cascade)
+  assigned_agent    User?                @relation("AssignedConversations", fields: [assigned_agent_id], references: [id])
+  property          Property?            @relation("PropertyConversations", fields: [property_id], references: [id], onDelete: SetNull)
+  messages          Message[]
+
+  @@index([contact_id])
+  @@index([property_id])
+  @@index([last_message_at])
+  @@index([status])
+  @@map("conversations")
+}
+
+model Message {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  whatsapp_id     String        @unique @db.VarChar(191)
+  conversation_id String        @db.Uuid
+  type            MessageType
+  content         String
+  status          MessageStatus @default(SENT)
+  from_customer   Boolean
+  timestamp       DateTime      @db.Timestamptz(6)
+  media_url       String?       @db.VarChar(191)
+  media_type      String?       @db.VarChar(191)
+  metadata        Json?
+  is_read         Boolean       @default(false)
+  created_at      DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime      @default(now()) @db.Timestamptz(6)
+  source          String?       @default("CRM") @db.VarChar(255)
+  
+  // Relations
+  conversation    Conversation  @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+
+  @@index([conversation_id])
+  @@index([from_customer])
+  @@index([status])
+  @@index([timestamp])
+  @@map("messages")
 }
