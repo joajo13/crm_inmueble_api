@@ -20,6 +20,24 @@ const ConversationController = {
     } catch (error) {
       next(error);
     }
+  },
+
+  getAllConversations: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const conversations = await ConversationService.getAllConversations();
+      res.json({ success: true, data: conversations });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  getConversations: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await ConversationService.getConversations(req.query);
+      res.json({ success: true, data: result });
+    } catch (error) {
+      next(error);
+    }
   }
 };
 

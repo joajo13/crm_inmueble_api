@@ -7,5 +7,6 @@ const router = Router();
 
 router.post('/', validateRequest(conversationValidationSchema), ConversationController.createConversation);
 router.post('/agent-response', validateRequest(agentResponseValidationSchema), ConversationController.saveAgentResponse);
+router.get('/all', ConversationController.getAllConversations);
 
 export default router; 

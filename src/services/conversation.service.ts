@@ -97,6 +97,107 @@ const ConversationService = {
       if (error instanceof AppError) throw error;
       throw new AppError('INTERNAL_ERROR', ['Error al guardar la respuesta del agente']);
     }
+  },
+
+  getConversations: async (filters: {
+    status?: string;
+    contactId?: string;
+    startDate?: Date;
+    endDate?: Date;
+    limit?: number;
+    offset?: number;
+  } = {}) => {
+    try {
+      const {
+        status,
+        contactId,
+        startDate,
+        endDate,
+        limit = 10,
+        offset = 0
+      } = filters;
+
+      const where: any = {};
+
+      if (status) where.status = status;
+      if (contactId) where.contact_id = contactId;
+      if (startDate || endDate) {
+        where.created_at = {};
+        if (startDate) where.created_at.gte = startDate;
+        if (endDate) where.created_at.lte = endDate;
+      }
+
+      const conversations = await prisma.conversation.findMany({
+        where,
+        include: {
+          contact: true,
+          messages: {
+            orderBy: { timestamp: 'asc' }
+          },
+          property: {
+            select: {
+              id: true,
+              title: true,
+              price: true,
+              currency: true
+            }
+          }
+        },
+        orderBy: { last_message_at: 'desc' },
+        take: limit,
+        skip: offset
+      });
+
+      const total = await prisma.conversation.count({ where });
+
+      return {
+        conversations,
+        pagination: {
+          total,
+          limit,
+          offset,
+          hasMore: total > offset + limit
+        }
+      };
+    } catch (error) {
+      throw new AppError('INTERNAL_ERROR', ['Error al obtener las conversaciones']);
+    }
+  },
+
+  getAllConversations: async () => {
+    try {
+      const conversations = await prisma.conversation.findMany({
+        include: {
+          contact: {
+            select: {
+              id: true,
+              wa_id: true,
+              name: true,
+              phone_number: true,
+              created_at: true,
+              updated_at: true
+            }
+          },
+          messages: {
+            orderBy: { timestamp: 'desc' },
+            take: 1,
+            select: {
+              id: true,
+              content: true,
+              type: true,
+              timestamp: true,
+              from_customer: true,
+              status: true
+            }
+          }
+        },
+        orderBy: { last_message_at: 'desc' }
+      });
+
+      return conversations;
+    } catch (error) {
+      throw new AppError('INTERNAL_ERROR', ['Error al obtener las conversaciones']);
+    }
   }
 };
 
